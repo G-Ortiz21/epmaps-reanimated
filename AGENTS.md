@@ -71,6 +71,10 @@ No agregues una dependencia nueva sin documentar y justificar su incorporación 
 - `expo-network`
 - `expo-file-system`
 - `expo-image-picker`
+- `@tanstack/react-query`
+- `@tanstack/react-query-persist-client`
+- `@tanstack/query-async-storage-persister`
+- `@react-native-async-storage/async-storage`
 
 Prefiere módulos del ecosistema Expo cuando cubran las necesidades del proyecto.
 
@@ -79,7 +83,6 @@ No incorpores las siguientes bibliotecas, porque se evaluaron y descartaron en l
 - Zustand
 - Zod
 - Axios
-- TanStack Query
 - React Hook Form
 - Formik
 
@@ -188,7 +191,7 @@ No cambies estos nombres de estado sin revisar las migraciones, los repositorios
 
 ### Caché de medidores
 
-- La caché de cada medidor es válida durante el mismo día calendario en que se consultó.
+- Los datos satisfactorios de un medidor se persisten en AsyncStorage durante 24 horas; con conexión, la consulta se revalida pasados 5 minutos (ADR-015).
 - Si existe conexión, utiliza la API según las reglas de consulta y actualización de caché.
 - Sin conexión, permite utilizar cualquier dato almacenado en caché, aunque haya superado su período de validez.
 - No presentes datos almacenados como si estuvieran necesariamente actualizados. Cuando corresponda, informa que se están utilizando datos locales.

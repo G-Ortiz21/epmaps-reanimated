@@ -1,4 +1,7 @@
-import { eliminarBorrador } from '../data/repositories/borradorRepository';
+import {
+  eliminarBorrador,
+  obtenerBorrador,
+} from '../data/repositories/borradorRepository';
 import {
   crearLecturaLocal,
   LecturaDuplicadaError,
@@ -8,12 +11,18 @@ import { calcularConsumo } from '../domain/consumo';
 import { crearPeriodoLocal } from '../domain/identidadLectura';
 import { determinarEstadoVerificacion } from '../domain/reglasLectura';
 import type {
+  BorradorRegistro,
   CrearLecturaInput,
   DatosRegistroLectura,
   EstadoMedidor,
   LecturaLocal,
 } from '../domain/tipos';
-import { validarCodigoMedidor, validarRegistro } from '../domain/validaciones';
+import {
+  esBorradorRecuperable,
+  validarCodigoMedidor,
+  validarRegistro,
+} from '../domain/validaciones';
+import { eliminarFoto } from './fotoService';
 
 /**
  * Caso de uso de guardado local de una lectura (R4). Usa el repositorio

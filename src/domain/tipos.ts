@@ -65,12 +65,6 @@ export type DecisionEstadoOficina =
   | { permiteContinuar: true; requiereRevision: false; mensaje: string }
   | { permiteContinuar: false; requiereRevision: boolean; mensaje: string };
 
-export interface MedidorCache {
-  codigo: string;
-  datos: MedidorOficina;
-  consultadoEn: string;
-}
-
 export interface LecturaLocal {
   claveUnica: string;
   remoteId: string | null;

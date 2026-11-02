@@ -1,6 +1,5 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
-const Module = require('node:module');
 const { beforeEach, test } = require('node:test');
 const ts = require('typescript');
 
@@ -24,6 +23,11 @@ const {
   esMedidorOficina,
 } = require('../src/domain/validaciones.ts');
 const { buscarMedidorRemoto } = require('../src/api/medidoresApi.ts');
+const {
+  consultarMedidorRemotoValidado,
+  interpretarConsultaMedidor,
+  normalizarCodigoMedidor,
+} = require('../src/hooks/useMedidorQuery.ts');
 
 const medidorValido = {
   codigo: 'MED-123456',
@@ -36,58 +40,9 @@ const medidorValido = {
   promedioMensual: 18.5,
 };
 
-const cacheState = { value: null, reads: 0, writes: [] };
-const apiState = { result: null, calls: 0 };
-const rutaServicio = require.resolve('../src/services/medidoresService.ts');
-const cargarOriginal = Module._load;
-
-Module._load = function cargarConDependenciasSimuladas(request, parent, isMain) {
-  if (parent?.filename === rutaServicio) {
-    if (request.endsWith('/data/repositories/medidoresRepository')) {
-      return {
-        obtenerMedidorCache: async () => {
-          cacheState.reads += 1;
-          return cacheState.value;
-        },
-        guardarMedidorCache: async (...argumentos) => {
-          cacheState.writes.push(argumentos);
-          cacheState.value = {
-            codigo: argumentos[0],
-            datos: argumentos[1],
-            consultadoEn: argumentos[2].toISOString(),
-          };
-        },
-      };
-    }
-    if (request.endsWith('/api/medidoresApi')) {
-      return {
-        buscarMedidorRemoto: async () => {
-          apiState.calls += 1;
-          if (apiState.result instanceof Error) {
-            throw apiState.result;
-          }
-          return apiState.result;
-        },
-      };
-    }
-    if (request.endsWith('/api/client')) {
-      return { ApiError };
-    }
-  }
-  return cargarOriginal.call(this, request, parent, isMain);
-};
-
-const { consultarMedidor } = require('../src/services/medidoresService.ts');
-
-function resetMocks() {
-  cacheState.value = null;
-  cacheState.reads = 0;
-  cacheState.writes = [];
-  apiState.result = { estado: 'encontrado', medidor: medidorValido };
-  apiState.calls = 0;
-}
-
-beforeEach(resetMocks);
+beforeEach(() => {
+  process.env.EXPO_PUBLIC_API_URL = 'https://mockapi.example.invalid';
+});
 
 function errorDeTipo(kind) {
   return (error) => error instanceof ApiError && error.kind === kind;
@@ -153,122 +108,176 @@ test('activo permite continuar, suspendido bloquea y un estado desconocido requi
   assert.equal(desconocido.requiereRevision, true);
 });
 
-test('la caché del día se usa sin una solicitud remota', async () => {
-  resetMocks();
-  const fecha = new Date(2026, 9, 28, 12);
-  cacheState.value = {
-    codigo: medidorValido.codigo,
-    datos: medidorValido,
-    consultadoEn: fecha.toISOString(),
-  };
-  const resultado = await consultarMedidor(medidorValido.codigo, true, fecha);
-  assert.equal(resultado.estado, 'encontrado');
-  assert.equal(resultado.origen, 'cache_local');
-  assert.equal(apiState.calls, 0);
+test('la normalización recorta y unifica mayúsculas sin alterar el código', () => {
+  assert.equal(normalizarCodigoMedidor('  med-123456 '), 'MED-123456');
+  assert.equal(normalizarCodigoMedidor('MED-000001'), 'MED-000001');
 });
 
-test('la caché antigua se actualiza al consultar con conexión', async () => {
-  resetMocks();
-  const fecha = new Date(2026, 9, 28, 12);
-  cacheState.value = {
-    codigo: medidorValido.codigo,
-    datos: medidorValido,
-    consultadoEn: new Date(2026, 9, 27, 12).toISOString(),
-  };
-  const resultado = await consultarMedidor(medidorValido.codigo, true, fecha);
-  assert.equal(resultado.estado, 'encontrado');
-  assert.equal(resultado.origen, 'oficina');
-  assert.equal(cacheState.writes.length, 1);
+test('una respuesta válida devuelve el medidor y su marca de consulta', async () => {
+  await conFetch(async () => Response.json([medidorValido]), async () => {
+    const resultado = await consultarMedidorRemotoValidado(medidorValido.codigo);
+    assert.equal(resultado.medidor.codigo, medidorValido.codigo);
+    assert.equal(resultado.medidor.direccion, medidorValido.direccion);
+    assert.equal(Number.isNaN(Date.parse(resultado.consultadoEn)), false);
+  });
 });
 
-test('sin conexión devuelve una caché antigua con su marca local de consulta', async () => {
-  resetMocks();
-  const consultadoEn = new Date(2026, 9, 20, 12).toISOString();
-  cacheState.value = {
-    codigo: medidorValido.codigo,
-    datos: medidorValido,
-    consultadoEn,
-  };
-  const resultado = await consultarMedidor(
-    medidorValido.codigo,
-    false,
-    new Date(2026, 9, 28, 12),
+test('un código inválido no llega a la red', async () => {
+  let llamadas = 0;
+  await conFetch(
+    async () => {
+      llamadas += 1;
+      return Response.json([]);
+    },
+    async () => {
+      await assert.rejects(
+        consultarMedidorRemotoValidado('MED-12345'),
+        TypeError,
+      );
+    },
   );
-  assert.equal(resultado.estado, 'encontrado');
-  assert.equal(resultado.origen, 'cache_local');
-  assert.equal(resultado.consultadoEn, consultadoEn);
-  assert.equal(apiState.calls, 0);
+  assert.equal(llamadas, 0);
 });
 
-test('sin conexión y sin caché devuelve un resultado controlado', async () => {
-  resetMocks();
-  const resultado = await consultarMedidor(
-    medidorValido.codigo,
-    false,
-    new Date(2026, 9, 28, 12),
+test('un medidor inexistente se informa como not_found', async () => {
+  await conFetch(async () => Response.json([]), async () => {
+    await assert.rejects(
+      consultarMedidorRemotoValidado(medidorValido.codigo),
+      errorDeTipo('not_found'),
+    );
+  });
+});
+
+test('una respuesta que rompe el contrato se informa como invalid_response', async () => {
+  await conFetch(
+    async () => Response.json([{ ...medidorValido, codigo: 45 }]),
+    async () => {
+      await assert.rejects(
+        consultarMedidorRemotoValidado(medidorValido.codigo),
+        errorDeTipo('invalid_response'),
+      );
+    },
   );
-  assert.deepEqual(resultado, {
+});
+
+test('un fallo de red se propaga como error sin fabricar datos', async () => {
+  await conFetch(
+    async () => {
+      throw new TypeError('network unreachable');
+    },
+    async () => {
+      await assert.rejects(
+        consultarMedidorRemotoValidado(medidorValido.codigo),
+        errorDeTipo('network'),
+      );
+    },
+  );
+});
+
+const consultaSinDatos = {
+  data: undefined,
+  error: null,
+  isError: false,
+  isPending: true,
+  isStale: false,
+};
+const datosGuardados = {
+  medidor: medidorValido,
+  consultadoEn: '2026-10-28T12:00:00.000Z',
+};
+const contextoBase = {
+  codigoNormalizado: medidorValido.codigo,
+  codigoValido: true,
+  enLinea: true,
+  restaurando: false,
+};
+
+test('sin conexión y sin datos persistidos informa sin_cache_sin_conexion sin esperar a la red', () => {
+  const lectura = interpretarConsultaMedidor(consultaSinDatos, {
+    ...contextoBase,
+    enLinea: false,
+  });
+  assert.deepEqual(lectura.resultado, {
     estado: 'sin_cache_sin_conexion',
     codigo: medidorValido.codigo,
   });
-  assert.equal(apiState.calls, 0);
+  assert.equal(lectura.cargando, false);
+  assert.equal(lectura.error, null);
 });
 
-test('código inválido no consulta ni caché', async () => {
-  resetMocks();
-  await assert.rejects(
-    consultarMedidor('MED-12345', true),
-    TypeError,
+test('sin conexión, los datos persistidos se muestran como caché local', () => {
+  const lectura = interpretarConsultaMedidor(
+    { ...consultaSinDatos, isPending: false, data: datosGuardados },
+    { ...contextoBase, enLinea: false },
   );
-  assert.equal(cacheState.reads, 0);
-  assert.equal(apiState.calls, 0);
+  assert.equal(lectura.resultado.estado, 'encontrado');
+  assert.equal(lectura.resultado.origen, 'cache_local');
+  assert.equal(lectura.resultado.medidor.codigo, medidorValido.codigo);
+  assert.equal(lectura.error, null);
 });
 
-test('respuesta remota inválida no crea ni sobrescribe caché', async () => {
-  apiState.result = new ApiError(
-    'invalid_response',
-    'La respuesta del medidor no cumple el contrato acordado.',
+test('con conexión y datos frescos el origen es la oficina', () => {
+  const lectura = interpretarConsultaMedidor(
+    { ...consultaSinDatos, isPending: false, data: datosGuardados },
+    contextoBase,
   );
-  await assert.rejects(
-    consultarMedidor(medidorValido.codigo, true, new Date(2026, 9, 28, 12)),
-    errorDeTipo('invalid_response'),
-  );
-  assert.equal(cacheState.value, null);
-  assert.equal(cacheState.writes.length, 0);
-
-  const anterior = {
-    codigo: medidorValido.codigo,
-    datos: medidorValido,
-    consultadoEn: new Date(2026, 9, 27, 12).toISOString(),
-  };
-  cacheState.value = anterior;
-  assert.equal(cacheState.value, anterior);
-  await assert.rejects(
-    consultarMedidor(medidorValido.codigo, true, new Date(2026, 9, 28, 12)),
-    errorDeTipo('invalid_response'),
-  );
-  assert.equal(cacheState.value, anterior);
-  assert.equal(cacheState.writes.length, 0);
+  assert.equal(lectura.resultado.estado, 'encontrado');
+  assert.equal(lectura.resultado.origen, 'oficina');
 });
 
-test('un error de red permite reutilizar la caché antigua sin sobrescribirla', async () => {
-  const anterior = {
-    codigo: medidorValido.codigo,
-    datos: medidorValido,
-    consultadoEn: new Date(2026, 9, 27, 12).toISOString(),
-  };
-  cacheState.value = anterior;
-  apiState.result = new ApiError('network', 'No se pudo conectar.');
-
-  const resultado = await consultarMedidor(
-    medidorValido.codigo,
-    true,
-    new Date(2026, 9, 28, 12),
+test('un error sin datos previos se informa como error comprensible', () => {
+  const lectura = interpretarConsultaMedidor(
+    {
+      ...consultaSinDatos,
+      isError: true,
+      error: new ApiError('network', 'No se pudo conectar.'),
+    },
+    contextoBase,
   );
-  assert.equal(resultado.estado, 'encontrado');
-  assert.equal(resultado.origen, 'cache_local');
-  assert.equal(cacheState.value, anterior);
-  assert.equal(cacheState.writes.length, 0);
+  assert.equal(lectura.resultado, null);
+  assert.equal(typeof lectura.error, 'string');
+  assert.match(lectura.error, /conexión|conectar/);
+  assert.equal(lectura.cargando, false);
+});
+
+test('una actualización fallida conserva los datos anteriores y lo avisa', () => {
+  const lectura = interpretarConsultaMedidor(
+    {
+      ...consultaSinDatos,
+      isPending: false,
+      isError: true,
+      error: new ApiError('invalid_response', 'Contrato roto.'),
+      data: datosGuardados,
+    },
+    contextoBase,
+  );
+  assert.equal(lectura.resultado.estado, 'encontrado');
+  assert.equal(lectura.resultado.medidor.codigo, medidorValido.codigo);
+  assert.equal(typeof lectura.avisoActualizacion, 'string');
+  assert.equal(lectura.error, null);
+});
+
+test('un código inválido no presenta resultados ni carga', () => {
+  const lectura = interpretarConsultaMedidor(consultaSinDatos, {
+    ...contextoBase,
+    codigoValido: false,
+  });
+  assert.deepEqual(lectura, {
+    resultado: null,
+    error: null,
+    avisoActualizacion: null,
+    cargando: false,
+  });
+});
+
+test('durante la restauración se espera antes de declarar datos ausentes', () => {
+  const lectura = interpretarConsultaMedidor(consultaSinDatos, {
+    ...contextoBase,
+    enLinea: false,
+    restaurando: true,
+  });
+  assert.equal(lectura.resultado, null);
+  assert.equal(lectura.cargando, true);
 });
 
 test('la API distingue 404 de otros errores HTTP', async () => {

@@ -8,9 +8,9 @@ import {
   View,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
+import { useIsRestoring } from '@tanstack/react-query';
 
 import { RouteScreen } from '../../../components/RouteScreen';
-import { mensajeErrorMedidor } from '../../../components/medidoresUi';
 import { useConexion } from '../../../contexts/ConexionContext';
 import { useRegistro } from '../../../contexts/RegistroContext';
 import { ESTADOS_MEDIDOR, type EstadoMedidor } from '../../../domain/tipos';
@@ -18,9 +18,11 @@ import {
   evaluarEstadoOficina,
   validarCodigoMedidor,
 } from '../../../domain/validaciones';
+import {
+  interpretarConsultaMedidor,
+  useMedidorQuery,
+} from '../../../hooks/useMedidorQuery';
 import { existeLecturaEnPeriodo } from '../../../services/registroService';
-import type { ResultadoConsultaMedidor } from '../../../services/medidoresService';
-import { consultarMedidor } from '../../../services/medidoresService';
 
 const PALETA = {
   fondo: '#EAF4F8',
@@ -78,12 +80,6 @@ export default function EstadoMedidorScreen() {
     descartarRegistro,
   } = useRegistro();
 
-  const [consulta, setConsulta] = useState<{
-    clave: string;
-    resultado: ResultadoConsultaMedidor | null;
-    error: string | null;
-  } | null>(null);
-
   const [lecturaExistente, setLecturaExistente] =
     useState<boolean | null>(null);
 
@@ -92,7 +88,17 @@ export default function EstadoMedidorScreen() {
       ? null
       : 'Consulta un medidor válido antes de iniciar el registro.';
 
-  const claveConsulta = `${codigoMedidor}:${enLinea}`;
+  // La consulta compartida por clave evita descargas duplicadas y permite
+  // servir los datos persistidos sin conexión (ADR-015).
+  const consultaMedidor = useMedidorQuery(codigoMedidor, enLinea);
+  const restaurandoCache = useIsRestoring();
+
+  const consulta = interpretarConsultaMedidor(consultaMedidor, {
+    codigoNormalizado: codigoMedidor,
+    codigoValido: errorCodigo === null,
+    enLinea,
+    restaurando: restaurandoCache,
+  });
 
   useEffect(() => {
     if (
@@ -117,26 +123,6 @@ export default function EstadoMedidorScreen() {
       };
     }
 
-    void consultarMedidor(codigoMedidor, enLinea)
-      .then((resultado) => {
-        if (vigente) {
-          setConsulta({
-            clave: claveConsulta,
-            resultado,
-            error: null,
-          });
-        }
-      })
-      .catch((errorConsulta: unknown) => {
-        if (vigente) {
-          setConsulta({
-            clave: claveConsulta,
-            resultado: null,
-            error: mensajeErrorMedidor(errorConsulta),
-          });
-        }
-      });
-
     void existeLecturaEnPeriodo(codigoMedidor)
       .then((existe) => {
         if (vigente) setLecturaExistente(existe);
@@ -148,14 +134,11 @@ export default function EstadoMedidorScreen() {
     return () => {
       vigente = false;
     };
-  }, [codigoMedidor, enLinea, claveConsulta, errorCodigo]);
+  }, [codigoMedidor, errorCodigo]);
 
-  const consultaActual =
-    consulta?.clave === claveConsulta ? consulta : null;
-
-  const resultado = consultaActual?.resultado ?? null;
-  const error = errorCodigo ?? consultaActual?.error ?? null;
-  const cargando = errorCodigo === null && consultaActual === null;
+  const resultado = consulta.resultado;
+  const error = errorCodigo ?? consulta.error ?? null;
+  const cargando = consulta.cargando;
 
   const medidorEncontrado =
     resultado?.estado === 'encontrado' ? resultado.medidor : null;
@@ -263,6 +246,13 @@ export default function EstadoMedidorScreen() {
             </Text>
           </View>
           <View style={styles.puntoVerde} />
+        </View>
+      )}
+
+      {medidorEncontrado !== null && consulta.avisoActualizacion !== null && (
+        <View style={styles.errorPanel} accessibilityRole="alert">
+          <Text style={styles.errorTitulo}>Información posiblemente desactualizada</Text>
+          <Text style={styles.errorTexto}>{consulta.avisoActualizacion}</Text>
         </View>
       )}
 

@@ -1,5 +1,3 @@
-
-import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -9,77 +7,54 @@ import {
   View,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
+import { useIsRestoring } from '@tanstack/react-query';
 
 import { MedidorCard } from '../../../components/MedidorCard';
-import { mensajeErrorMedidor } from '../../../components/medidoresUi';
 import { useConexion } from '../../../contexts/ConexionContext';
 import {
   evaluarEstadoOficina,
   validarCodigoMedidor,
 } from '../../../domain/validaciones';
-import type { ResultadoConsultaMedidor } from '../../../services/medidoresService';
-import { consultarMedidor } from '../../../services/medidoresService';
-import { spacing } from '../../../theme/spacing';
+import {
+  interpretarConsultaMedidor,
+  normalizarCodigoMedidor,
+  useMedidorQuery,
+} from '../../../hooks/useMedidorQuery';
 import { typography } from '../../../theme/typography';
+import { useRegistro } from '../../../contexts/RegistroContext';
 
 export default function MedidorDetailScreen() {
   const { codigo } = useLocalSearchParams<{ codigo: string }>();
-  const codigoMedidor = Array.isArray(codigo) ? '' : codigo ?? '';
+  const codigoMedidor = normalizarCodigoMedidor(
+    Array.isArray(codigo) ? '' : codigo ?? '',
+  );
   const { enLinea } = useConexion();
-
-  const [consulta, setConsulta] = useState<{
-    clave: string;
-    resultado: ResultadoConsultaMedidor | null;
-    error: string | null;
-  } | null>(null);
+  const isRestoring = useIsRestoring();
+  const {
+    registro,
+    hayRegistroPendiente,
+  } = useRegistro();
 
   const errorCodigo =
     validarCodigoMedidor(codigoMedidor) === null
       ? null
       : 'El código del medidor no tiene un formato válido.';
 
-  const claveConsulta = `${codigoMedidor}:${enLinea}`;
+  const consultaMedidor = useMedidorQuery(codigoMedidor, enLinea);
 
-  useEffect(() => {
-    let vigente = true;
+  const consulta = interpretarConsultaMedidor(consultaMedidor, {
+    codigoNormalizado: codigoMedidor,
+    codigoValido: errorCodigo === null,
+    enLinea,
+    restaurando: isRestoring,
+  });
 
-    if (errorCodigo !== null) {
-      return () => {
-        vigente = false;
-      };
-    }
+  const resultado = consulta.resultado;
 
-    void consultarMedidor(codigoMedidor, enLinea)
-      .then((resultadoConsulta) => {
-        if (vigente) {
-          setConsulta({
-            clave: claveConsulta,
-            resultado: resultadoConsulta,
-            error: null,
-          });
-        }
-      })
-      .catch((consultaError: unknown) => {
-        if (vigente) {
-          setConsulta({
-            clave: claveConsulta,
-            resultado: null,
-            error: mensajeErrorMedidor(consultaError),
-          });
-        }
-      });
+  const error = errorCodigo ?? consulta.error;
 
-    return () => {
-      vigente = false;
-    };
-  }, [codigoMedidor, enLinea, claveConsulta, errorCodigo]);
-
-  const consultaActual =
-    consulta?.clave === claveConsulta ? consulta : null;
-
-  const resultado = consultaActual?.resultado ?? null;
-  const error = errorCodigo ?? consultaActual?.error ?? null;
-  const cargando = errorCodigo === null && consultaActual === null;
+  // Evitamos mostrar carga o estado vacío prematuro mientras la caché se está restaurando de AsyncStorage
+  const cargando = consulta.cargando;
 
   const medidorEncontrado =
     resultado?.estado === 'encontrado' ? resultado : null;
@@ -87,9 +62,7 @@ export default function MedidorDetailScreen() {
   const decision =
     medidorEncontrado === null
       ? null
-      : evaluarEstadoOficina(
-          medidorEncontrado.medidor.estadoOficina,
-        );
+      : evaluarEstadoOficina(medidorEncontrado.medidor.estadoOficina);
 
   const puedeRegistrar =
     resultado?.estado === 'sin_cache_sin_conexion' ||
@@ -99,10 +72,25 @@ export default function MedidorDetailScreen() {
     router.replace('/medidor');
   }
 
-  function registrarLectura() {
+  function registrarLectura(): void {
+    const puedeRecuperarBorrador =
+      hayRegistroPendiente &&
+      registro.codigoMedidor === codigoMedidor;
+
+    const pasoDestino = puedeRecuperarBorrador
+      ? registro.paso
+      : 'estado_medidor';
+
     router.push({
-      pathname: '/registro/estado_medidor',
-      params: { codigo: codigoMedidor },
+      pathname: `/registro/${pasoDestino}` as
+        | '/registro/estado_medidor'
+        | '/registro/datos_lectura'
+        | '/registro/revision_consumo'
+        | '/registro/fotografia'
+        | '/registro/resumen',
+      params: {
+        codigo: codigoMedidor,
+      },
     });
   }
 
@@ -161,7 +149,7 @@ export default function MedidorDetailScreen() {
           </View>
         </View>
 
-        {/* Estado de consulta */}
+        {/* Sección de consulta */}
         <View style={styles.seccion}>
           <View>
             <Text style={styles.seccionTitulo}>Resultado de consulta</Text>
@@ -183,7 +171,7 @@ export default function MedidorDetailScreen() {
           </View>
         )}
 
-        {error !== null && (
+        {error !== null && !cargando && (
           <View style={styles.errorPanel} accessibilityRole="alert">
             <View style={styles.errorIcono}>
               <Text style={styles.errorIconoTexto}>!</Text>
@@ -250,6 +238,20 @@ export default function MedidorDetailScreen() {
               />
             </View>
 
+            {consulta.avisoActualizacion !== null && (
+              <View
+                accessibilityRole="alert"
+                style={styles.avisoActualizacionPanel}
+              >
+                <Text style={styles.avisoActualizacionTitulo}>
+                  Información posiblemente desactualizada
+                </Text>
+                <Text style={styles.avisoActualizacionTexto}>
+                  {consulta.avisoActualizacion}
+                </Text>
+              </View>
+            )}
+
             {decision !== null && (
               <View
                 accessibilityRole="summary"
@@ -290,7 +292,7 @@ export default function MedidorDetailScreen() {
                     style={[
                       styles.decisionDescripcion,
                       !decision.permiteContinuar &&
-                        styles.decisionDescripcionRoja,
+                      styles.decisionDescripcionRoja,
                     ]}
                   >
                     {decision.mensaje}
@@ -369,8 +371,6 @@ const styles = StyleSheet.create({
   contenido: {
     paddingBottom: 36,
   },
-
-  // Encabezado
   encabezado: {
     backgroundColor: '#062B52',
     paddingHorizontal: 22,
@@ -525,8 +525,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: '#51E1AF',
   },
-
-  // Sección y estados
   seccion: {
     marginHorizontal: 22,
     marginTop: 25,
@@ -625,8 +623,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 19,
   },
-
-  // Resultado del medidor
   resultadoContenedor: {
     marginHorizontal: 16,
   },
@@ -658,6 +654,25 @@ const styles = StyleSheet.create({
   medidorCardContenedor: {
     borderRadius: 23,
     overflow: 'hidden',
+  },
+  avisoActualizacionPanel: {
+    marginTop: 13,
+    padding: 14,
+    borderRadius: 18,
+    backgroundColor: '#FFF8E8',
+    borderWidth: 1,
+    borderColor: '#F2DDAA',
+  },
+  avisoActualizacionTitulo: {
+    color: '#80511A',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  avisoActualizacionTexto: {
+    color: '#805E32',
+    fontSize: 12,
+    lineHeight: 18,
+    marginTop: 5,
   },
   decisionPanel: {
     flexDirection: 'row',
@@ -716,8 +731,6 @@ const styles = StyleSheet.create({
   decisionDescripcionRoja: {
     color: '#963D4D',
   },
-
-  // Modo sin conexión
   offlinePanel: {
     marginHorizontal: 16,
     padding: 17,
@@ -765,8 +778,6 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     marginTop: 13,
   },
-
-  // Acción de registro
   accionPanel: {
     marginHorizontal: 16,
     marginTop: 18,
@@ -844,8 +855,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 21,
   },
-
-  // Pie y navegación
   piePanel: {
     flexDirection: 'row',
     alignItems: 'flex-start',

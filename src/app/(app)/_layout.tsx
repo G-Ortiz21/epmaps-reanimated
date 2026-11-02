@@ -1,13 +1,17 @@
-import { Stack } from 'expo-router';
 
+import { Stack } from 'expo-router';
+import { RegistroProvider } from '../../contexts/RegistroContext';
 
 export default function AppLayout() {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="inicio" />
-      <Stack.Screen name="lecturas" />
-      <Stack.Screen name="medidor/index" />
-      <Stack.Screen name="medidor/[codigo]" />
-    </Stack>
+    <RegistroProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="inicio" />
+        <Stack.Screen name="lecturas" />
+        <Stack.Screen name="medidor/index" />
+        <Stack.Screen name="medidor/[codigo]" />
+        <Stack.Screen name="registro" />
+      </Stack>
+    </RegistroProvider>
   );
 }

@@ -16,11 +16,9 @@ import { useSesion } from '../../../contexts/SesionContext';
 import { calcularConsumo } from '../../../domain/consumo';
 import { crearPeriodoLocal } from '../../../domain/identidadLectura';
 import { determinarEstadoVerificacion } from '../../../domain/reglasLectura';
-import type { MedidorOficina } from '../../../domain/tipos';
 import { validarRegistro } from '../../../domain/validaciones';
+import { useMedidorQuery } from '../../../hooks/useMedidorQuery';
 import { obtenerRutaFoto } from '../../../services/fotoService';
-import type { ResultadoConsultaMedidor } from '../../../services/medidoresService';
-import { consultarMedidor } from '../../../services/medidoresService';
 import {
   guardarLecturaLocal,
   LecturaYaRegistradaError,
@@ -40,7 +38,6 @@ export default function ResumenScreen() {
   const { tecnicoCodigo } = useSesion();
   const { enLinea } = useConexion();
 
-  const [medidor, setMedidor] = useState<MedidorOficina | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [guardada, setGuardada] = useState(false);
   const [mensaje, setMensaje] = useState<string | null>(null);
@@ -50,35 +47,17 @@ export default function ResumenScreen() {
   const estado = registro.estadoMedidor;
   const datos = registro.datos;
 
+  // Los datos de oficina sirven de referencia: vienen de la consulta
+  // compartida (caché persistida u oficina, ADR-015). Sin ellos, el resumen
+  // usa lo registrado por el técnico.
+  const consultaMedidor = useMedidorQuery(codigoMedidor ?? '', enLinea);
+  const medidor = consultaMedidor.data?.medidor ?? null;
+
   useEffect(() => {
     if (!cargandoBorrador) {
       definirPaso('resumen');
     }
   }, [cargandoBorrador, definirPaso]);
-
-  useEffect(() => {
-    let vigente = true;
-
-    if (codigoMedidor === null || cargandoBorrador) {
-      return () => {
-        vigente = false;
-      };
-    }
-
-    void consultarMedidor(codigoMedidor, enLinea)
-      .then((resultado: ResultadoConsultaMedidor) => {
-        if (vigente && resultado.estado === 'encontrado') {
-          setMedidor(resultado.medidor);
-        }
-      })
-      .catch(() => {
-        // Sin datos de oficina, el resumen usa lo registrado por el técnico.
-      });
-
-    return () => {
-      vigente = false;
-    };
-  }, [codigoMedidor, enLinea, cargandoBorrador]);
 
   if (cargandoBorrador) {
     return (

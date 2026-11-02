@@ -14,9 +14,9 @@ import { router } from 'expo-router';
 import { mensajeErrorMedidor } from '../../../components/medidoresUi';
 import { useConexion } from '../../../contexts/ConexionContext';
 import { validarCodigoMedidor } from '../../../domain/validaciones';
-import { consultarMedidor } from '../../../services/medidoresService';
 import { spacing } from '../../../theme/spacing';
 import { typography } from '../../../theme/typography';
+import { useMedidorQuery } from '../../../hooks/useMedidorQuery';
 
 export default function MedidorSearchScreen() {
   const { enLinea } = useConexion();
@@ -26,6 +26,7 @@ export default function MedidorSearchScreen() {
   const [mensaje, setMensaje] = useState<string | null>(null);
   const [sinCacheOffline, setSinCacheOffline] = useState(false);
   const [consultando, setConsultando] = useState(false);
+  const consultaMedidor = useMedidorQuery(codigo, enLinea);
 
   async function buscar(): Promise<void> {
     const codigoNormalizado = codigo.trim().toUpperCase();
@@ -40,16 +41,33 @@ export default function MedidorSearchScreen() {
     setConsultando(true);
 
     try {
-      const resultado = await consultarMedidor(codigoNormalizado, enLinea);
+      if (consultaMedidor.data?.medidor.codigo === codigoNormalizado) {
+        router.push({
+          pathname: '/medidor/[codigo]',
+          params: { codigo: consultaMedidor.data.medidor.codigo },
+        });
+        return;
+      }
 
-      if (resultado.estado === 'sin_cache_sin_conexion') {
+      if (!enLinea) {
         setSinCacheOffline(true);
+        return;
+      }
+
+      const resultado = await consultaMedidor.refetch();
+
+      if (resultado.error) {
+        throw resultado.error;
+      }
+
+      if (!resultado.data) {
+        setMensaje('No se encontraron datos para este medidor.');
         return;
       }
 
       router.push({
         pathname: '/medidor/[codigo]',
-        params: { codigo: resultado.medidor.codigo },
+        params: { codigo: resultado.data.medidor.codigo },
       });
     } catch (consultaError: unknown) {
       setMensaje(mensajeErrorMedidor(consultaError));

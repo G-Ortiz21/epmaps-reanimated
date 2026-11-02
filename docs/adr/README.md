@@ -20,3 +20,4 @@ Cada archivo registra una sola decisión. Un ADR aceptado no se edita: si cambia
 | [012](ADR-012-secure-store-sesion-del-tecnico.md) | Guardar la sesión con expo-secure-store | R1 | `expo-secure-store` |
 | [013](ADR-013-mockapi-oficina-simulada.md) | Simular el sistema de la oficina con MockAPI | R3, R4, R9 | ninguna |
 | [014](ADR-014-verificar-lectura-antes-de-enviar.md) | Verificar la lectura contra los datos de la oficina antes de enviarla | R4, R6, R7 | ninguna |
+| [015](ADR-015-cache-de-medidores-con-tanstack-query.md) | Persistir la caché de consultas de medidores con TanStack Query y AsyncStorage (reemplaza a 003 en esa caché) | R2, R3, R9 | `@tanstack/react-query`, `@tanstack/react-query-persist-client`, `@tanstack/query-async-storage-persister`, `@react-native-async-storage/async-storage` |

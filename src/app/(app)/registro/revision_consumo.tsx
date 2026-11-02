@@ -10,9 +10,7 @@ import { router } from 'expo-router';
 import { useConexion } from '../../../contexts/ConexionContext';
 import { useRegistro } from '../../../contexts/RegistroContext';
 import { calcularConsumo, esAnomalo } from '../../../domain/consumo';
-import type { MedidorOficina } from '../../../domain/tipos';
-import type { ResultadoConsultaMedidor } from '../../../services/medidoresService';
-import { consultarMedidor } from '../../../services/medidoresService';
+import { useMedidorQuery } from '../../../hooks/useMedidorQuery';
 import { spacing } from '../../../theme/spacing';
 import { typography } from '../../../theme/typography';
 
@@ -45,7 +43,6 @@ export default function RevisionConsumoScreen() {
 
   const { enLinea } = useConexion();
 
-  const [medidor, setMedidor] = useState<MedidorOficina | null>(null);
   const [errorConfirmacion, setErrorConfirmacion] = useState<string | null>(
     null,
   );
@@ -54,37 +51,16 @@ export default function RevisionConsumoScreen() {
   const estado = registro.estadoMedidor;
   const datos = registro.datos;
 
+  // Los datos de oficina vienen de la consulta compartida: caché persistida
+  // sin conexión u oficina cuando hay red (ADR-015).
+  const consultaMedidor = useMedidorQuery(codigoMedidor ?? '', enLinea);
+  const medidor = consultaMedidor.data?.medidor ?? null;
+
   useEffect(() => {
     if (!cargandoBorrador) {
       definirPaso('revision_consumo');
     }
   }, [cargandoBorrador, definirPaso]);
-
-  // Los datos de oficina vienen de la caché consultada el mismo día
-  // o de la oficina.
-  useEffect(() => {
-    let vigente = true;
-
-    if (codigoMedidor === null || cargandoBorrador) {
-      return () => {
-        vigente = false;
-      };
-    }
-
-    void consultarMedidor(codigoMedidor, enLinea)
-      .then((resultado: ResultadoConsultaMedidor) => {
-        if (vigente && resultado.estado === 'encontrado') {
-          setMedidor(resultado.medidor);
-        }
-      })
-      .catch(() => {
-        // Sin datos de oficina no se puede calcular; se informa abajo.
-      });
-
-    return () => {
-      vigente = false;
-    };
-  }, [codigoMedidor, enLinea, cargandoBorrador]);
 
   if (cargandoBorrador) {
     return (

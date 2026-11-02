@@ -1,7 +1,8 @@
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,13 +12,106 @@ import {
 import { router } from 'expo-router';
 
 import { useSesion } from '../../contexts/SesionContext';
-import { colors } from '../../theme/colors';
+import { useRegistro } from '../../contexts/RegistroContext';
 import { spacing } from '../../theme/spacing';
 import { typography } from '../../theme/typography';
 
 export default function HomeScreen() {
   const { tecnicoCodigo, cerrarSesion } = useSesion();
+
+  const {
+    registro,
+    cargandoBorrador,
+    hayRegistroPendiente,
+    descartarRegistro,
+  } = useRegistro();
+
   const [cerrando, setCerrando] = useState(false);
+  const [descartando, setDescartando] = useState(false);
+
+  // Evita mostrar varias veces el mismo aviso durante el montaje.
+  const avisoMostradoRef = useRef(false);
+
+  useEffect(() => {
+    if (cargandoBorrador || avisoMostradoRef.current) {
+      return;
+    }
+
+    if (!hayRegistroPendiente) {
+      return;
+    }
+
+    avisoMostradoRef.current = true;
+
+    Alert.alert(
+      'Registro sin terminar',
+      `Hay un registro pendiente${
+        registro.codigoMedidor
+          ? ` del medidor ${registro.codigoMedidor}`
+          : ''
+      }. ¿Qué deseas hacer?`,
+      [
+        {
+          text: 'Descartar registro',
+          style: 'destructive',
+          onPress: () => {
+            Alert.alert(
+              'Confirmar descarte',
+              'Se eliminará el borrador y se intentará eliminar la fotografía asociada. Esta acción no se puede deshacer.',
+              [
+                {
+                  text: 'Cancelar',
+                  style: 'cancel',
+                },
+                {
+                  text: 'Descartar',
+                  style: 'destructive',
+                  onPress: () => {
+                    void descartarRegistro()
+                      .then(() => {
+                        Alert.alert(
+                          'Registro descartado',
+                          'El borrador se eliminó correctamente.',
+                        );
+                      })
+                      .catch((error: unknown) => {
+                        console.error(
+                          'No se pudo descartar el registro:',
+                          error,
+                        );
+                        Alert.alert(
+                          'Error',
+                          'No se pudo eliminar el borrador. Inténtalo nuevamente.',
+                        );
+                      });
+                  },
+                },
+              ],
+            );
+          },
+        },
+        {
+          text: 'Continuar registro',
+          onPress: () => {
+            if (registro.codigoMedidor) {
+              router.push({
+                pathname: '/medidor/[codigo]',
+                params: { codigo: registro.codigoMedidor },
+              });
+            } else {
+              router.push('/medidor');
+            }
+          },
+        },
+      ],
+      { cancelable: true },
+    );
+  }, [
+    cargandoBorrador,
+    hayRegistroPendiente,
+    registro.codigoMedidor,
+    descartarRegistro,
+  ]);
 
   async function salir(): Promise<void> {
     setCerrando(true);
@@ -27,6 +121,7 @@ export default function HomeScreen() {
       router.replace('/login');
     } catch (error) {
       console.error('No se pudo cerrar la sesión:', error);
+      Alert.alert('Error', 'No se pudo cerrar la sesión.');
     } finally {
       setCerrando(false);
     }
@@ -38,7 +133,6 @@ export default function HomeScreen() {
         contentContainerStyle={styles.contenido}
         showsVerticalScrollIndicator={false}
       >
-        {/* Encabezado principal */}
         <View style={styles.encabezado}>
           <View pointerEvents="none" style={styles.orbeUno} />
           <View pointerEvents="none" style={styles.orbeDos} />
@@ -67,7 +161,6 @@ export default function HomeScreen() {
             Gestiona tus medidores y administra las lecturas de tu jornada.
           </Text>
 
-          {/* Sesión del técnico */}
           <View style={styles.tecnicoPanel}>
             <View style={styles.avatar}>
               <Text style={styles.avatarTexto}>T</Text>
@@ -87,7 +180,6 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Accesos principales */}
         <View style={styles.seccion}>
           <View>
             <Text style={styles.seccionTitulo}>Operaciones</Text>
@@ -97,6 +189,41 @@ export default function HomeScreen() {
           </View>
           <View style={styles.seccionDecoracion} />
         </View>
+
+        {hayRegistroPendiente && (
+          <Pressable
+            accessibilityRole="button"
+            disabled={descartando || cargandoBorrador}
+            onPress={() => {
+              if (registro.codigoMedidor) {
+                router.push({
+                  pathname: '/medidor/[codigo]',
+                  params: { codigo: registro.codigoMedidor },
+                });
+              } else {
+                router.push('/medidor');
+              }
+            }}
+            style={({ pressed }) => [
+              styles.accionSecundaria,
+              pressed && styles.tarjetaPresionada,
+            ]}
+          >
+            <View style={styles.accionIconoSecundario}>
+              <Text style={styles.accionIconoSecundarioTexto}>↻</Text>
+            </View>
+            <View style={styles.accionContenido}>
+              <Text style={styles.accionTitulo}>
+                Continuar registro pendiente
+              </Text>
+              <Text style={styles.accionDescripcion}>
+                {registro.codigoMedidor
+                  ? `Medidor: ${registro.codigoMedidor}`
+                  : 'Tienes un registro sin terminar.'}
+              </Text>
+            </View>
+          </Pressable>
+        )}
 
         <Pressable
           accessibilityRole="button"
@@ -151,7 +278,6 @@ export default function HomeScreen() {
           </View>
         </Pressable>
 
-        {/* Información operativa */}
         <View style={styles.seccion}>
           <View>
             <Text style={styles.seccionTitulo}>Centro de operaciones</Text>
@@ -191,7 +317,6 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Cierre de sesión */}
         <Pressable
           accessibilityRole="button"
           disabled={cerrando}
@@ -213,9 +338,7 @@ export default function HomeScreen() {
           </Text>
         </Pressable>
 
-        <Text style={styles.pie}>
-          LECTURA ÁGIL · EPMAPS
-        </Text>
+        <Text style={styles.pie}>LECTURA ÁGIL · EPMAPS</Text>
       </ScrollView>
     </View>
   );
@@ -229,8 +352,6 @@ const styles = StyleSheet.create({
   contenido: {
     paddingBottom: spacing.xl * 2,
   },
-
-  // Identidad visual
   encabezado: {
     backgroundColor: '#062B52',
     paddingHorizontal: spacing.lg,
@@ -350,8 +471,6 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     maxWidth: 310,
   },
-
-  // Panel translúcido de sesión
   tecnicoPanel: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -414,8 +533,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700',
   },
-
-  // Secciones
   seccion: {
     marginHorizontal: spacing.lg,
     marginTop: spacing.xl,
@@ -441,8 +558,6 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: '#36C7CD',
   },
-
-  // Acción principal
   accionPrincipal: {
     marginHorizontal: spacing.md,
     padding: spacing.md,
@@ -522,8 +637,6 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: '800',
   },
-
-  // Acción secundaria
   accionSecundaria: {
     marginHorizontal: spacing.md,
     marginTop: spacing.md,
@@ -587,8 +700,6 @@ const styles = StyleSheet.create({
     opacity: 0.84,
     transform: [{ scale: 0.99 }],
   },
-
-  // Información operativa
   infoPanel: {
     marginHorizontal: spacing.md,
     marginBottom: spacing.sm,
@@ -634,8 +745,6 @@ const styles = StyleSheet.create({
     lineHeight: 17,
     marginTop: 4,
   },
-
-  // Cierre de sesión
   botonSalir: {
     minHeight: 49,
     marginHorizontal: spacing.md,

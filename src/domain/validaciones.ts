@@ -1,4 +1,5 @@
 import type {
+  BorradorRegistro,
   DatosRegistroLectura,
   DecisionEstadoOficina,
   ErroresRegistro,
@@ -246,4 +247,21 @@ export function validarRegistro(
   }
 
   return errores;
+}
+
+/**
+ * Indica si un borrador contiene un registro en curso que vale la pena
+ * recuperar (R8). El registro empieza al definirse el código del medidor
+ * o el estado observado, o al escribirse el primer dato. Una fila sin
+ * código, sin estado y sin datos es un residuo de una versión anterior:
+ * no debe presentarse como una recuperación posible ni conservarse.
+ */
+export function esBorradorRecuperable(
+  borrador: Pick<BorradorRegistro, 'codigoMedidor' | 'estadoMedidor' | 'datos'>,
+): boolean {
+  return (
+    borrador.codigoMedidor !== null ||
+    borrador.estadoMedidor !== null ||
+    Object.keys(borrador.datos).length > 0
+  );
 }

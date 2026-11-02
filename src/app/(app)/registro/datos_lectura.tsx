@@ -8,13 +8,14 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { Campo } from '../../../components/Campo';
-import { mensajeErrorMedidor } from '../../../components/medidoresUi';
 import { useConexion } from '../../../contexts/ConexionContext';
 import { useRegistro } from '../../../contexts/RegistroContext';
 import type { ErroresRegistro } from '../../../domain/tipos';
 import { validarRegistro } from '../../../domain/validaciones';
-import type { ResultadoConsultaMedidor } from '../../../services/medidoresService';
-import { consultarMedidor } from '../../../services/medidoresService';
+import {
+  interpretarConsultaMedidor,
+  useMedidorQuery,
+} from '../../../hooks/useMedidorQuery';
 import { spacing } from '../../../theme/spacing';
 import { typography } from '../../../theme/typography';
 
@@ -57,12 +58,25 @@ export default function DatosLecturaScreen() {
     Partial<Record<'lectura' | 'motivo' | 'descripcion', string>>
   >({});
 
-  const [consultaMedidor, setConsultaMedidor] =
-    useState<ResultadoConsultaMedidor | null>(null);
-
   const codigoMedidor = registro.codigoMedidor;
   const estado = registro.estadoMedidor;
   const datos = registro.datos;
+
+  // La consulta compartida por clave evita descargas duplicadas y permite
+  // servir los datos persistidos sin conexión (ADR-015).
+  const consultaMedidor = useMedidorQuery(codigoMedidor ?? '', enLinea);
+
+  const consulta = interpretarConsultaMedidor(consultaMedidor, {
+    codigoNormalizado: codigoMedidor ?? '',
+    codigoValido: codigoMedidor !== null,
+    enLinea,
+    restaurando: false,
+  });
+
+  const medidorOficina =
+    consulta.resultado?.estado === 'encontrado'
+      ? consulta.resultado.medidor
+      : null;
 
   // El paso actual se guarda en el borrador (ADR-004).
   useEffect(() => {
@@ -73,46 +87,18 @@ export default function DatosLecturaScreen() {
 
   // La lectura anterior de la oficina sirve de referencia y para comparar.
   useEffect(() => {
-    let vigente = true;
+    const medidor = consultaMedidor.data?.medidor;
 
-    if (codigoMedidor === null || cargandoBorrador) {
-      return () => {
-        vigente = false;
-      };
+    if (
+      medidor !== undefined &&
+      medidor.ultimaLectura !== null &&
+      datos.lecturaAnterior === null
+    ) {
+      actualizarDatos({ lecturaAnterior: medidor.ultimaLectura });
     }
 
-    void consultarMedidor(codigoMedidor, enLinea)
-      .then((resultado) => {
-        if (!vigente) {
-          return;
-        }
-
-        setConsultaMedidor(resultado);
-
-        if (
-          resultado.estado === 'encontrado' &&
-          resultado.medidor.ultimaLectura !== null &&
-          datos.lecturaAnterior === null
-        ) {
-          actualizarDatos({
-            lecturaAnterior: resultado.medidor.ultimaLectura,
-          });
-        }
-      })
-      .catch((consultaError: unknown) => {
-        if (vigente) {
-          // Sin datos de oficina la comparación queda pendiente (ADR-014).
-          console.warn(mensajeErrorMedidor(consultaError));
-        }
-      });
-
-    return () => {
-      vigente = false;
-    };
-
-    // datos.lecturaAnterior se omite a propósito: solo se rellena una vez.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [codigoMedidor, enLinea, cargandoBorrador]);
+    // datos.lecturaAnterior cambia al rellenarse: la condición impide bucles.
+  }, [consultaMedidor.data, datos.lecturaAnterior, actualizarDatos]);
 
   function avanzar(): void {
     if (estado === null) {
@@ -156,11 +142,9 @@ export default function DatosLecturaScreen() {
     datos.lecturaAnterior !== null &&
     datos.lecturaAnterior !== undefined
       ? String(datos.lecturaAnterior)
-      : consultaMedidor?.estado === 'encontrado'
-        ? consultaMedidor.medidor.ultimaLectura === null
-          ? 'Sin dato previo'
-          : String(consultaMedidor.medidor.ultimaLectura)
-        : 'Sin dato previo';
+      : medidorOficina === null || medidorOficina.ultimaLectura === null
+        ? 'Sin dato previo'
+        : String(medidorOficina.ultimaLectura);
 
   const nombreEstado =
     estado === 'normal'
@@ -376,7 +360,7 @@ export default function DatosLecturaScreen() {
             )}
           </View>
 
-          {consultaMedidor?.estado === 'sin_cache_sin_conexion' && (
+          {consulta.resultado?.estado === 'sin_cache_sin_conexion' && (
             <View style={styles.avisoConexion}>
               <Text style={styles.avisoConexionIcono}>!</Text>
               <View style={styles.avisoConexionContenido}>

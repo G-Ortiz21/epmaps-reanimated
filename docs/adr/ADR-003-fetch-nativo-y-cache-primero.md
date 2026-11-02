@@ -1,7 +1,7 @@
 # ADR-003: Consultar la oficina con fetch nativo y usar la base local como caché de medidores
 
 ## Estado
-Aceptado.
+Reemplazado por ADR-015 en lo que respecta a la caché de consultas de medidores. El uso de `fetch` nativo con `AbortController` y la clasificación de errores se mantiene vigente.
 
 ## Fecha
 2026-10-27

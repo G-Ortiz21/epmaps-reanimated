@@ -193,9 +193,9 @@ export async function actualizarLecturaPendiente(
   cambios: ActualizarLecturaPendienteInput,
   fechaActualizacion: Date = new Date(),
 ): Promise<LecturaLocal> {
-  const columnas: ReadonlyArray<
+  const columnas: readonly (
     readonly [keyof ActualizarLecturaPendienteInput, string]
-  > = [
+  )[] = [
     ['estadoMedidor', 'estado_medidor'],
     ['lectura', 'lectura'],
     ['lecturaAnterior', 'lectura_anterior'],
@@ -210,7 +210,7 @@ export async function actualizarLecturaPendiente(
   ];
 
   const assignments: string[] = [];
-  const values: Array<string | number | null> = [];
+  const values: (string | number | null)[] = [];
 
   for (const [property, column] of columnas) {
     const value = cambios[property];
