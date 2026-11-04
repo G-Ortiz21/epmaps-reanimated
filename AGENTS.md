@@ -273,3 +273,19 @@ Este orden orienta el trabajo, pero antes de comenzar cada módulo comprueba qu�
 - No cambies los nombres de rutas, estados, campos de base de datos o funciones públicas sin revisar sus usos.
 - No declares que una regla de negocio está implementada si solo existe en la interfaz.
 - Si una instrucción de este archivo contradice un requisito, una decisión de arquitectura o el comportamiento real del proyecto, explica la contradicción antes de resolverla.
+
+## Migración de autenticación (Firebase, Uniwind y Reanimated)
+
+Antes de tocar código lee `CONTEXTO_AUTH.md`. No leas `DISEÑO.md` ni los ADR salvo ADR-016 y los que ese archivo cite.
+
+Esta migración tiene excepciones a las reglas anteriores, ya decididas en ADR-016:
+
+- ADR-012 queda **reemplazado** por ADR-016: la sesión es de Firebase Authentication.
+- Los imports de `firebase/*` se permiten **únicamente** en `src/lib/firebase.ts`, `src/services/authService.ts` y `src/services/erroresAuth.ts`.
+- La configuración de Firebase se lee solo desde `src/config.ts`.
+- `src/domain/` sigue sin importar `react`, `expo-*` ni `firebase`.
+- **No modifiques `src/data/`** (SQLite se mantiene, ADR-002).
+- Archivos nuevos o modificados: estilos con `className` (Uniwind), **sin `StyleSheet`**; imports relativos.
+- Las animaciones usan `react-native-reanimated`; respeta "reducir movimiento".
+- Antes de usar una API de Uniwind o Reanimated, consulta su documentación oficial (no la memoria).
+- Una fase por sesión; al terminar ejecuta los comandos de verificación de `CONTEXTO_AUTH.md` §8.

@@ -1,7 +1,5 @@
-import { StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
+import { Text, TextInput, View, type TextInputProps } from 'react-native';
 import { colors } from '../theme/colors';
-import { dimensions, radii, spacing } from '../theme/spacing';
-import { typography } from '../theme/typography';
 
 /**
  * Campo de formulario controlado con etiqueta visible y error junto al
@@ -38,9 +36,13 @@ export function Campo({
   autoCapitalize,
 }: CampoProps) {
   return (
-    <View style={styles.campo}>
-      <Text style={styles.etiqueta}>{etiqueta}</Text>
-      {ayuda !== undefined && <Text style={styles.ayuda}>{ayuda}</Text>}
+    <View className="gap-1">
+      <Text className="text-sm font-medium leading-5 text-texto">{etiqueta}</Text>
+      {ayuda !== undefined && (
+        <Text className="text-xs font-medium leading-4 text-texto-secundario">
+          {ayuda}
+        </Text>
+      )}
       <TextInput
         accessibilityLabel={etiqueta}
         autoCapitalize={autoCapitalize}
@@ -52,50 +54,15 @@ export function Campo({
         onChangeText={onChangeText}
         placeholder={placeholder}
         placeholderTextColor={colors.textoSecundario}
-        style={[styles.input, multiline && styles.inputMultiline, error != null && styles.inputError]}
+        textAlignVertical={multiline ? 'top' : undefined}
+        className={`min-h-12 rounded-lg border bg-superficie px-3 py-2 text-base leading-6 text-texto ${error != null ? 'border-error' : 'border-borde'} ${multiline ? 'min-h-24' : ''}`}
         value={valor}
       />
       {error != null && (
-        <Text accessibilityRole="alert" style={styles.error}>
+        <Text accessibilityRole="alert" className="text-base leading-6 text-error">
           {error}
         </Text>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  campo: {
-    gap: spacing.xs,
-  },
-  etiqueta: {
-    ...typography.label,
-    color: colors.texto,
-  },
-  ayuda: {
-    ...typography.caption,
-    color: colors.textoSecundario,
-  },
-  input: {
-    ...typography.body,
-    backgroundColor: colors.superficie,
-    borderColor: colors.borde,
-    borderRadius: radii.field,
-    borderWidth: 1,
-    color: colors.texto,
-    minHeight: dimensions.inputMinimumHeight,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  inputMultiline: {
-    minHeight: dimensions.inputMinimumHeight * 2,
-    textAlignVertical: 'top',
-  },
-  inputError: {
-    borderColor: colors.error,
-  },
-  error: {
-    ...typography.body,
-    color: colors.error,
-  },
-});

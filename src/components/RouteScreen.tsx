@@ -1,10 +1,7 @@
 import { Link, type Href } from 'expo-router';
 import type { ReactNode } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors } from '../theme/colors';
-import { dimensions, radii, spacing } from '../theme/spacing';
-import { typography } from '../theme/typography';
 
 export interface RouteLink {
   label: string;
@@ -29,22 +26,37 @@ export function RouteScreen({
   showPendingNotice = true,
 }: RouteScreenProps) {
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.brand}>LECTURA ÁGIL</Text>
-          <Text style={styles.headerSubtitle}>Registro técnico de medidores</Text>
+    <SafeAreaView className="flex-1 bg-fondo">
+      <ScrollView contentContainerClassName="grow">
+        <View className="bg-marca px-6 py-6">
+          <Text className="text-xl font-semibold leading-[26px] text-blanco">
+            LECTURA ÁGIL
+          </Text>
+          <Text className="mt-1 text-base leading-6 text-blanco">
+            Registro técnico de medidores
+          </Text>
         </View>
 
-        <View style={styles.body}>
-          <Text style={styles.kicker}>{kicker}</Text>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.description}>{description}</Text>
+        <View className="gap-3 p-6">
+          <Text className="text-sm font-medium leading-5 text-marca-oscura">
+            {kicker}
+          </Text>
+          <Text className="text-[28px] font-bold leading-[34px] text-texto">
+            {title}
+          </Text>
+          <Text className="text-base leading-6 text-texto-secundario">
+            {description}
+          </Text>
 
           {showPendingNotice && (
-            <View style={styles.notice} accessibilityRole="summary">
-              <Text style={styles.noticeTitle}>Funcionalidad pendiente</Text>
-              <Text style={styles.noticeText}>
+            <View
+              className="gap-1 rounded-xl border border-borde bg-superficie p-4"
+              accessibilityRole="summary"
+            >
+              <Text className="text-sm font-medium leading-5 text-advertencia">
+                Funcionalidad pendiente
+              </Text>
+              <Text className="text-base leading-6 text-texto">
                 Esta pantalla solo prepara la ruta. No inicia sesión, consulta
                 datos ni guarda cambios.
               </Text>
@@ -54,18 +66,19 @@ export function RouteScreen({
           {children}
 
           {links.length > 0 && (
-            <View style={styles.navigation}>
-              <Text style={styles.navigationTitle}>NAVEGACIÓN</Text>
+            <View className="mt-2 gap-2">
+              <Text className="mb-1 text-sm font-medium leading-5 text-texto-secundario">
+                NAVEGACIÓN
+              </Text>
               {links.map((link) => (
                 <Link key={`${link.href}-${link.label}`} href={link.href} asChild>
                   <Pressable
                     accessibilityRole="button"
-                    style={({ pressed }) => [
-                      styles.link,
-                      pressed && styles.linkPressed,
-                    ]}
+                    className="min-h-12 items-center justify-center rounded-lg border border-marca bg-superficie px-4 py-2 active:bg-superficie-suave"
                   >
-                    <Text style={styles.linkText}>{link.label}</Text>
+                    <Text className="text-sm font-medium leading-5 text-marca-oscura">
+                      {link.label}
+                    </Text>
                   </Pressable>
                 </Link>
               ))}
@@ -76,87 +89,3 @@ export function RouteScreen({
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.fondo,
-  },
-  content: {
-    flexGrow: 1,
-  },
-  header: {
-    backgroundColor: colors.marca,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.xl,
-  },
-  brand: {
-    ...typography.section,
-    color: colors.blanco,
-  },
-  headerSubtitle: {
-    ...typography.body,
-    color: colors.blanco,
-    marginTop: spacing.xs,
-  },
-  body: {
-    padding: spacing.xl,
-    gap: spacing.md,
-  },
-  kicker: {
-    ...typography.label,
-    color: colors.marcaOscura,
-  },
-  title: {
-    ...typography.title,
-    color: colors.texto,
-  },
-  description: {
-    ...typography.body,
-    color: colors.textoSecundario,
-  },
-  notice: {
-    backgroundColor: colors.superficie,
-    borderColor: colors.borde,
-    borderRadius: radii.card,
-    borderWidth: 1,
-    padding: spacing.lg,
-    gap: spacing.xs,
-  },
-  noticeTitle: {
-    ...typography.label,
-    color: colors.advertencia,
-  },
-  noticeText: {
-    ...typography.body,
-    color: colors.texto,
-  },
-  navigation: {
-    gap: spacing.sm,
-    marginTop: spacing.sm,
-  },
-  navigationTitle: {
-    ...typography.label,
-    color: colors.textoSecundario,
-    marginBottom: spacing.xs,
-  },
-  link: {
-    alignItems: 'center',
-    backgroundColor: colors.superficie,
-    borderColor: colors.marca,
-    borderRadius: radii.field,
-    borderWidth: 1,
-    justifyContent: 'center',
-    minHeight: dimensions.minimumTouchTarget,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-  },
-  linkPressed: {
-    backgroundColor: colors.superficieSuave,
-  },
-  linkText: {
-    ...typography.label,
-    color: colors.marcaOscura,
-    textAlign: 'center',
-  },
-});

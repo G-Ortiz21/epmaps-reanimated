@@ -7,6 +7,8 @@ export default function AppLayout() {
     <RegistroProvider>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="inicio" />
+        <Stack.Screen name="perfil" />
+        <Stack.Screen name="cambiar-clave" />
         <Stack.Screen name="lecturas" />
         <Stack.Screen name="medidor/index" />
         <Stack.Screen name="medidor/[codigo]" />

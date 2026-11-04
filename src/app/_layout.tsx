@@ -1,5 +1,12 @@
+import '../global.css';
+import { useEffect, useRef, useState } from 'react';
 import { Stack } from 'expo-router';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
+import Animated, {
+  FadeOut,
+  ReduceMotion,
+  ZoomIn,
+} from 'react-native-reanimated';
 import { useIsRestoring } from '@tanstack/react-query';
 import {
   PersistQueryClientProvider,
@@ -7,8 +14,6 @@ import {
 
 import { persistOptions, queryClient } from '../lib/queryClient';
 import { colors } from '../theme/colors';
-import { spacing } from '../theme/spacing';
-import { typography } from '../theme/typography';
 import { ConexionProvider } from '../contexts/ConexionContext';
 import { SesionProvider, useSesion } from '../contexts/SesionContext';
 import SincronizacionAutomatica from '../components/SincronizacionAutomatica';
@@ -23,12 +28,12 @@ function informarErrorRestauracion() {
 
 function PantallaArranque() {
   return (
-    <View style={styles.arranque}>
+    <View className="flex-1 items-center justify-center gap-3 bg-fondo">
       <ActivityIndicator
         accessibilityLabel="Cargando aplicación"
-        color={colors.marca}
+        colorClassName="text-marca"
       />
-      <Text style={styles.arranqueTexto}>
+      <Text className="text-base text-texto-secundario">
         Restaurando datos y comprobando la sesión…
       </Text>
     </View>
@@ -38,30 +43,91 @@ function PantallaArranque() {
 function NavegacionRaiz() {
   const { estado } = useSesion();
   const restaurandoCache = useIsRestoring();
+  const estadoAnterior = useRef(estado);
+  const [mostrarVerificacionCompletada, setMostrarVerificacionCompletada] =
+    useState(false);
+
+  useEffect(() => {
+    const verificacionCompletada =
+      estadoAnterior.current === 'sin_verificar' && estado === 'autenticado';
+    estadoAnterior.current = estado;
+
+    if (!verificacionCompletada) {
+      return;
+    }
+
+    const temporizadorMostrar = setTimeout(() => {
+      setMostrarVerificacionCompletada(true);
+    }, 0);
+
+    return () => clearTimeout(temporizadorMostrar);
+  }, [estado]);
+
+  useEffect(() => {
+    if (!mostrarVerificacionCompletada) {
+      return;
+    }
+
+    const temporizador = setTimeout(
+      () => setMostrarVerificacionCompletada(false),
+      2200,
+    );
+
+    return () => clearTimeout(temporizador);
+  }, [mostrarVerificacionCompletada]);
 
   if (estado === 'cargando' || restaurandoCache) {
     return <PantallaArranque />;
   }
 
+  const noAutenticado = estado === 'no_autenticado';
+  const sinVerificar = estado === 'sin_verificar';
   const autenticado = estado === 'autenticado';
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        contentStyle: { backgroundColor: colors.fondo },
-      }}
-    >
-      <Stack.Protected guard={autenticado}>
-        <Stack.Screen name="(app)" />
-      </Stack.Protected>
+    <View className="flex-1">
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: colors.fondo },
+        }}
+      >
+        <Stack.Protected guard={noAutenticado}>
+          <Stack.Screen name="(auth)" />
+        </Stack.Protected>
 
-      <Stack.Protected guard={!autenticado}>
-        <Stack.Screen name="(auth)" />
-      </Stack.Protected>
+        <Stack.Protected guard={sinVerificar}>
+          <Stack.Screen name="(verificacion)" />
+        </Stack.Protected>
 
-      <Stack.Screen name="index" />
-    </Stack>
+        <Stack.Protected guard={autenticado}>
+          <Stack.Screen name="(app)" />
+        </Stack.Protected>
+
+        <Stack.Screen name="index" />
+      </Stack>
+      {mostrarVerificacionCompletada ? (
+        <View
+          accessibilityRole="alert"
+          className="absolute left-5 right-5 top-12 z-50"
+          pointerEvents="none"
+        >
+          <Animated.View
+            entering={ZoomIn.reduceMotion(ReduceMotion.System)}
+            exiting={FadeOut.reduceMotion(ReduceMotion.System)}
+          >
+            <View className="items-center rounded-2xl bg-exito px-5 py-3">
+              <Text className="text-base font-bold text-blanco">
+                Correo verificado
+              </Text>
+              <Text className="text-sm text-blanco">
+                Ya puedes usar Lectura Ágil.
+              </Text>
+            </View>
+          </Animated.View>
+        </View>
+      ) : null}
+    </View>
   );
 }
 
@@ -81,17 +147,3 @@ export default function RootLayout() {
     </PersistQueryClientProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  arranque: {
-    alignItems: 'center',
-    backgroundColor: colors.fondo,
-    flex: 1,
-    gap: spacing.md,
-    justifyContent: 'center',
-  },
-  arranqueTexto: {
-    ...typography.body,
-    color: colors.textoSecundario,
-  },
-});

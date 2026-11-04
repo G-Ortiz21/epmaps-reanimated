@@ -1,26 +1,16 @@
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useIsRestoring } from '@tanstack/react-query';
 
 import { MedidorCard } from '../../../components/MedidorCard';
 import { useConexion } from '../../../contexts/ConexionContext';
-import {
-  evaluarEstadoOficina,
-  validarCodigoMedidor,
-} from '../../../domain/validaciones';
+import { evaluarEstadoOficina, validarCodigoMedidor } from '../../../domain/validaciones';
 import {
   interpretarConsultaMedidor,
   normalizarCodigoMedidor,
   useMedidorQuery,
 } from '../../../hooks/useMedidorQuery';
-import { typography } from '../../../theme/typography';
+
 import { useRegistro } from '../../../contexts/RegistroContext';
 
 export default function MedidorDetailScreen() {
@@ -95,125 +85,119 @@ export default function MedidorDetailScreen() {
   }
 
   return (
-    <View style={styles.pantalla}>
+    <View className={"flex-1 bg-[#EAF4F8]"}>
       <ScrollView
-        contentContainerStyle={styles.contenido}
+        contentContainerClassName={"pb-[36px]"}
         showsVerticalScrollIndicator={false}
       >
         {/* Encabezado */}
-        <View style={styles.encabezado}>
-          <View pointerEvents="none" style={styles.orbeUno} />
-          <View pointerEvents="none" style={styles.orbeDos} />
+        <View className={"bg-[#062B52] px-[22px] pt-[20px] pb-[30px] rounded-bl-[32px] rounded-br-[32px] overflow-hidden"}>
+          <View pointerEvents="none" className={"absolute -top-[90px] -right-[70px] w-[240px] h-[240px] rounded-[120px] bg-[rgba(34,178,224,0.16)] border-[1px] border-[rgba(179,239,255,0.2)]"} />
+          <View pointerEvents="none" className={"absolute -bottom-[110px] -left-[70px] w-[210px] h-[210px] rounded-[105px] bg-[rgba(0,207,190,0.12)] border-[1px] border-[rgba(179,239,255,0.16)]"} />
 
           <Pressable
             accessibilityRole="button"
             onPress={volverAConsultar}
-            style={({ pressed }) => [
-              styles.botonVolver,
-              pressed && styles.presionado,
-            ]}
+            className={["self-start flex-row items-center gap-[7px] px-[12px] py-[7px] mb-[22px] rounded-[99px] bg-[rgba(255,255,255,0.10)] border-[1px] border-[rgba(255,255,255,0.2)]", "active:opacity-[0.8]"].filter(Boolean).join(' ')}
           >
-            <Text style={styles.flechaVolver}>←</Text>
-            <Text style={styles.textoVolver}>Volver a consulta</Text>
+            <Text className={"text-blanco text-[20px]"}>←</Text>
+            <Text className={"text-[#E0F6FF] text-[12px] font-[700]"}>Volver a consulta</Text>
           </Pressable>
 
-          <View style={styles.marcaFila}>
-            <View style={styles.marcaIcono}>
-              <Text style={styles.gotaMarca}>◇</Text>
+          <View className={"flex-row items-center gap-[9px] mb-[24px]"}>
+            <View className={"w-[34px] h-[34px] rounded-[12px] items-center justify-center bg-[rgba(255,255,255,0.13)] border-[1px] border-[rgba(255,255,255,0.25)]"}>
+              <Text className={"text-[#8DEBFF] text-[24px] font-[700]"}>◇</Text>
             </View>
-            <Text style={styles.marcaTexto}>LECTURA ÁGIL · EPMAPS</Text>
+            <Text className={"text-[#BDEBFA] text-[10px] font-[700] tracking-[1px]"}>LECTURA ÁGIL · EPMAPS</Text>
           </View>
 
-          <Text style={styles.kicker}>INFORMACIÓN DEL SUMINISTRO</Text>
-          <Text style={styles.titulo}>Detalle del</Text>
-          <Text style={styles.tituloAcento}>medidor.</Text>
+          <Text className={"text-[#7EE6E8] text-[9px] font-[800] tracking-[1.4px] mb-[8px]"}>INFORMACIÓN DEL SUMINISTRO</Text>
+          <Text className={"text-[29px] font-[700] leading-[35px] text-blanco"}>Detalle del</Text>
+          <Text className={"text-[#65DCE5] text-[30px] leading-[37px] font-[800]"}>medidor.</Text>
 
-          <Text style={styles.subtitulo}>
+          <Text className={"text-[12px] font-[400] leading-[20px] text-[#D5EAF7] mt-[10px]"}>
             Revisa la información disponible antes de registrar una nueva
             lectura.
           </Text>
 
-          <View style={styles.codigoPanel}>
-            <View style={styles.codigoIcono}>
-              <Text style={styles.codigoIconoTexto}>◇</Text>
+          <View className={"flex-row items-center gap-[12px] mt-[22px] p-[14px] rounded-[20px] bg-[rgba(255,255,255,0.10)] border-[1px] border-[rgba(255,255,255,0.22)]"}>
+            <View className={"w-[43px] h-[43px] rounded-[15px] items-center justify-center bg-[rgba(92,218,232,0.20)] border-[1px] border-[rgba(141,235,255,0.42)]"}>
+              <Text className={"text-[#B5F6FF] text-[30px] font-[700]"}>◇</Text>
             </View>
 
-            <View style={styles.codigoContenido}>
-              <Text style={styles.codigoEtiqueta}>CÓDIGO CONSULTADO</Text>
-              <Text style={styles.codigoValor}>
+            <View className={"flex-1 min-w-[0px]"}>
+              <Text className={"text-[#A6D7EA] text-[9px] tracking-[1px] font-[700] mb-[5px]"}>CÓDIGO CONSULTADO</Text>
+              <Text className={"text-blanco text-[16px] font-[800]"}>
                 {codigoMedidor || 'Código no disponible'}
               </Text>
             </View>
 
-            <View style={styles.codigoPunto} />
+            <View className={"w-[9px] h-[9px] rounded-[5px] bg-[#51E1AF]"} />
           </View>
         </View>
 
         {/* Sección de consulta */}
-        <View style={styles.seccion}>
+        <View className={"mx-[22px] mt-[25px] mb-[13px]"}>
           <View>
-            <Text style={styles.seccionTitulo}>Resultado de consulta</Text>
-            <Text style={styles.seccionSubtitulo}>
+            <Text className={"text-[#103E66] text-[19px] font-[800]"}>Resultado de consulta</Text>
+            <Text className={"text-[#5A788D] text-[12px] mt-[4px]"}>
               Información obtenida para este suministro.
             </Text>
           </View>
         </View>
 
         {cargando && (
-          <View style={styles.estadoPanel}>
-            <View style={styles.cargaIcono}>
+          <View className={"mx-[16px] items-center p-[25px] rounded-[24px] bg-[rgba(255,255,255,0.82)] border-[1px] border-blanco"}>
+            <View className={"w-[58px] h-[58px] rounded-[21px] bg-[#DDF4FA] items-center justify-center mb-[14px]"}>
               <ActivityIndicator size="large" color="#087FC4" />
             </View>
-            <Text style={styles.estadoTitulo}>Consultando medidor</Text>
-            <Text style={styles.estadoDescripcion}>
+            <Text className={"text-[#103E66] text-[17px] font-[800] text-center"}>Consultando medidor</Text>
+            <Text className={"text-[#5A788D] text-[12px] leading-[19px] text-center mt-[8px]"}>
               Estamos recuperando los datos disponibles del suministro.
             </Text>
           </View>
         )}
 
         {error !== null && !cargando && (
-          <View style={styles.errorPanel} accessibilityRole="alert">
-            <View style={styles.errorIcono}>
-              <Text style={styles.errorIconoTexto}>!</Text>
+          <View className={"mx-[16px] p-[18px] rounded-[23px] bg-[#FFF3F4] border-[1px] border-[#F5CDD4]"} accessibilityRole="alert">
+            <View className={"w-[43px] h-[43px] rounded-[15px] bg-[#FFE0E5] items-center justify-center mb-[12px]"}>
+              <Text className={"text-[#C7354F] text-[25px] font-[900]"}>!</Text>
             </View>
-            <Text style={styles.errorTitulo}>
+            <Text className={"text-[#A92D43] text-[16px] font-[800]"}>
               No se pudo completar la consulta
             </Text>
-            <Text style={styles.errorDescripcion}>{error}</Text>
+            <Text className={"text-[#963D4D] text-[12px] leading-[19px] mt-[7px]"}>{error}</Text>
 
             <Pressable
               accessibilityRole="button"
               onPress={volverAConsultar}
-              style={({ pressed }) => [
-                styles.botonReintentar,
-                pressed && styles.presionado,
-              ]}
+              className={["min-h-[45px] mt-[15px] rounded-[14px] px-[14px] flex-row items-center justify-between bg-[#C7354F]", "active:opacity-[0.8]"].filter(Boolean).join(' ')}
             >
-              <Text style={styles.botonReintentarTexto}>
+              <Text className={"text-blanco text-[12px] font-[800]"}>
                 Volver a consultar
               </Text>
-              <Text style={styles.botonReintentarFlecha}>→</Text>
+              <Text className={"text-blanco text-[19px]"}>→</Text>
             </Pressable>
           </View>
         )}
 
         {resultado?.estado === 'sin_cache_sin_conexion' && (
-          <View style={styles.offlinePanel}>
-            <View style={styles.offlineCabecera}>
-              <View style={styles.offlineIcono}>
-                <Text style={styles.offlineIconoTexto}>⌁</Text>
+          <View className={"mx-[16px] p-[17px] rounded-[23px] bg-[#FFF8E8] border-[1px] border-[#F2DDAA]"}>
+            <View className={"flex-row items-center gap-[11px]"}>
+              <View className={"w-[43px] h-[43px] rounded-[15px] items-center justify-center bg-[#FFE8B5]"}>
+                <Text className={"text-[#A96500] text-[26px] font-[800]"}>⌁</Text>
               </View>
-              <View style={styles.offlineContenido}>
-                <Text style={styles.offlineTitulo}>
+              <View className={"flex-1"}>
+                <Text className={"text-[#80511A] text-[15px] font-[800]"}>
                   Información no disponible
                 </Text>
-                <Text style={styles.offlineEtiqueta}>
+                <Text className={"text-[#A96500] text-[9px] font-[800] tracking-[0.7px] mt-[4px]"}>
                   MODO SIN CONEXIÓN
                 </Text>
               </View>
             </View>
 
-            <Text style={styles.offlineDescripcion}>
+            <Text className={"text-[#805E32] text-[12px] leading-[19px] mt-[13px]"}>
               No hay conexión ni una copia local de este medidor. Si continúas,
               el registro deberá quedar pendiente de verificación según las
               reglas de la aplicación.
@@ -222,15 +206,15 @@ export default function MedidorDetailScreen() {
         )}
 
         {medidorEncontrado !== null && (
-          <View style={styles.resultadoContenedor}>
-            <View style={styles.resultadoEtiqueta}>
-              <View style={styles.resultadoPunto} />
-              <Text style={styles.resultadoEtiquetaTexto}>
+          <View className={"mx-[16px]"}>
+            <View className={"flex-row items-center gap-[7px] self-start px-[11px] py-[7px] mb-[10px] rounded-[99px] bg-[#D9F7E9] border-[1px] border-[#B5EBD3]"}>
+              <View className={"w-[7px] h-[7px] rounded-[4px] bg-[#087F62]"} />
+              <Text className={"text-[#087F62] text-[9px] font-[800] tracking-[0.6px]"}>
                 MEDIDOR ENCONTRADO
               </Text>
             </View>
 
-            <View style={styles.medidorCardContenedor}>
+            <View className={"rounded-[23px] overflow-hidden"}>
               <MedidorCard
                 medidor={medidorEncontrado.medidor}
                 origen={medidorEncontrado.origen}
@@ -241,12 +225,12 @@ export default function MedidorDetailScreen() {
             {consulta.avisoActualizacion !== null && (
               <View
                 accessibilityRole="alert"
-                style={styles.avisoActualizacionPanel}
+                className={"mt-[13px] p-[14px] rounded-[18px] bg-[#FFF8E8] border-[1px] border-[#F2DDAA]"}
               >
-                <Text style={styles.avisoActualizacionTitulo}>
+                <Text className={"text-[#80511A] text-[13px] font-[800]"}>
                   Información posiblemente desactualizada
                 </Text>
-                <Text style={styles.avisoActualizacionTexto}>
+                <Text className={"text-[#805E32] text-[12px] leading-[18px] mt-[5px]"}>
                   {consulta.avisoActualizacion}
                 </Text>
               </View>
@@ -255,45 +239,26 @@ export default function MedidorDetailScreen() {
             {decision !== null && (
               <View
                 accessibilityRole="summary"
-                style={[
-                  styles.decisionPanel,
-                  decision.permiteContinuar
-                    ? styles.decisionPermitida
-                    : styles.decisionBloqueada,
-                ]}
+                className={(decision.permiteContinuar ? "flex-row items-start gap-[12px] p-[15px] mt-[13px] rounded-[20px] border-[1px] bg-[rgba(217,247,233,0.88)] border-[#B5EBD3]" : "flex-row items-start gap-[12px] p-[15px] mt-[13px] rounded-[20px] border-[1px] bg-[#FFF0F2] border-[#F5CDD4]")}
               >
                 <View
-                  style={[
-                    styles.decisionIcono,
-                    decision.permiteContinuar
-                      ? styles.decisionIconoVerde
-                      : styles.decisionIconoRojo,
-                  ]}
+                  className={(decision.permiteContinuar ? "w-[36px] h-[36px] rounded-[13px] items-center justify-center bg-[#C1EED9]" : "w-[36px] h-[36px] rounded-[13px] items-center justify-center bg-[#FFDCE2]")}
                 >
                   <Text
-                    style={[
-                      styles.decisionIconoTexto,
-                      decision.permiteContinuar
-                        ? styles.decisionTextoVerde
-                        : styles.decisionTextoRojo,
-                    ]}
+                    className={(decision.permiteContinuar ? "text-[19px] font-[900] text-[#087F62]" : "text-[19px] font-[900] text-[#C7354F]")}
                   >
                     {decision.permiteContinuar ? '✓' : '!'}
                   </Text>
                 </View>
 
-                <View style={styles.decisionContenido}>
-                  <Text style={styles.decisionTitulo}>
+                <View className={"flex-1"}>
+                  <Text className={"text-[#16496D] text-[13px] font-[800] mb-[4px]"}>
                     {decision.permiteContinuar
                       ? 'Puede continuar'
                       : 'Requiere atención'}
                   </Text>
                   <Text
-                    style={[
-                      styles.decisionDescripcion,
-                      !decision.permiteContinuar &&
-                      styles.decisionDescripcionRoja,
-                    ]}
+                    className={(!decision.permiteContinuar ? "text-[#963D4D] text-[12px] leading-[18px]" : "text-[#286B56] text-[12px] leading-[18px]")}
                   >
                     {decision.mensaje}
                   </Text>
@@ -305,16 +270,16 @@ export default function MedidorDetailScreen() {
 
         {/* Acción principal */}
         {puedeRegistrar && (
-          <View style={styles.accionPanel}>
-            <View style={styles.accionCabecera}>
-              <View style={styles.accionIcono}>
-                <Text style={styles.accionIconoTexto}>▤</Text>
+          <View className={"shadow-[0px_5px_13px_rgba(10,69,106,0.08)] mx-[16px] mt-[18px] p-[17px] rounded-[24px] bg-[rgba(255,255,255,0.82)] border-[1px] border-blanco"}>
+            <View className={"flex-row items-center gap-[12px] mb-[16px]"}>
+              <View className={"w-[45px] h-[45px] rounded-[16px] items-center justify-center bg-[#DDF4FA] border-[1px] border-[#BDE7F2]"}>
+                <Text className={"text-[#0879B6] text-[25px] font-[800]"}>▤</Text>
               </View>
-              <View style={styles.accionContenido}>
-                <Text style={styles.accionTitulo}>
+              <View className={"flex-1"}>
+                <Text className={"text-[#103E66] text-[15px] font-[800]"}>
                   Siguiente paso
                 </Text>
-                <Text style={styles.accionDescripcion}>
+                <Text className={"text-[#5A788D] text-[11px] leading-[17px] mt-[4px]"}>
                   Continúa al registro para indicar el estado del medidor.
                 </Text>
               </View>
@@ -323,24 +288,21 @@ export default function MedidorDetailScreen() {
             <Pressable
               accessibilityRole="button"
               onPress={registrarLectura}
-              style={({ pressed }) => [
-                styles.botonRegistrar,
-                pressed && styles.botonRegistrarPresionado,
-              ]}
+              className={["shadow-[0px_4px_10px_rgba(8,127,196,0.18)] min-h-[53px] px-[16px] rounded-[17px] flex-row items-center justify-between bg-[#087FC4] border-[1px] border-[#38B8DD]", "active:bg-[#075D92]"].filter(Boolean).join(' ')}
             >
-              <Text style={styles.botonRegistrarTexto}>
+              <Text className={"text-blanco text-[13px] font-[800]"}>
                 Registrar lectura
               </Text>
-              <Text style={styles.botonRegistrarFlecha}>→</Text>
+              <Text className={"text-blanco text-[21px]"}>→</Text>
             </Pressable>
           </View>
         )}
 
-        <View style={styles.piePanel}>
-          <View style={styles.pieIcono}>
-            <Text style={styles.pieIconoTexto}>i</Text>
+        <View className={"flex-row items-start gap-[10px] mx-[16px] mt-[18px] p-[14px] rounded-[18px] bg-[rgba(221,244,250,0.76)] border-[1px] border-blanco"}>
+          <View className={"w-[25px] h-[25px] rounded-[9px] items-center justify-center bg-blanco"}>
+            <Text className={"text-[#0879B6] text-[14px] font-[900]"}>i</Text>
           </View>
-          <Text style={styles.pieTexto}>
+          <Text className={"flex-1 text-[#5A788D] text-[11px] leading-[17px]"}>
             La información mostrada depende de los datos disponibles en
             oficina o en la caché local.
           </Text>
@@ -349,567 +311,13 @@ export default function MedidorDetailScreen() {
         <Pressable
           accessibilityRole="button"
           onPress={() => router.replace('/inicio')}
-          style={({ pressed }) => [
-            styles.botonInicio,
-            pressed && styles.presionado,
-          ]}
+          className={["self-center mt-[18px] px-[17px] py-[11px] rounded-[99px] border-[1px] border-[#C5E0EB] bg-[rgba(255,255,255,0.65)]", "active:opacity-[0.8]"].filter(Boolean).join(' ')}
         >
-          <Text style={styles.botonInicioTexto}>Volver al inicio</Text>
+          <Text className={"text-[#315F7B] text-[12px] font-[700]"}>Volver al inicio</Text>
         </Pressable>
 
-        <Text style={styles.pieMarca}>LECTURA ÁGIL · EPMAPS</Text>
+        <Text className={"text-[#7190A3] text-[9px] font-[700] tracking-[1.4px] text-center mt-[20px]"}>LECTURA ÁGIL · EPMAPS</Text>
       </ScrollView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  pantalla: {
-    flex: 1,
-    backgroundColor: '#EAF4F8',
-  },
-  contenido: {
-    paddingBottom: 36,
-  },
-  encabezado: {
-    backgroundColor: '#062B52',
-    paddingHorizontal: 22,
-    paddingTop: 20,
-    paddingBottom: 30,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
-    overflow: 'hidden',
-  },
-  orbeUno: {
-    position: 'absolute',
-    top: -90,
-    right: -70,
-    width: 240,
-    height: 240,
-    borderRadius: 120,
-    backgroundColor: 'rgba(34,178,224,0.16)',
-    borderWidth: 1,
-    borderColor: 'rgba(179,239,255,0.2)',
-  },
-  orbeDos: {
-    position: 'absolute',
-    bottom: -110,
-    left: -70,
-    width: 210,
-    height: 210,
-    borderRadius: 105,
-    backgroundColor: 'rgba(0,207,190,0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(179,239,255,0.16)',
-  },
-  botonVolver: {
-    alignSelf: 'flex-start',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 7,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    marginBottom: 22,
-    borderRadius: 99,
-    backgroundColor: 'rgba(255,255,255,0.10)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
-  },
-  flechaVolver: {
-    color: '#FFFFFF',
-    fontSize: 20,
-  },
-  textoVolver: {
-    color: '#E0F6FF',
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  marcaFila: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 9,
-    marginBottom: 24,
-  },
-  marcaIcono: {
-    width: 34,
-    height: 34,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.13)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.25)',
-  },
-  gotaMarca: {
-    color: '#8DEBFF',
-    fontSize: 24,
-    fontWeight: '700',
-  },
-  marcaTexto: {
-    color: '#BDEBFA',
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 1,
-  },
-  kicker: {
-    color: '#7EE6E8',
-    fontSize: 9,
-    fontWeight: '800',
-    letterSpacing: 1.4,
-    marginBottom: 8,
-  },
-  titulo: {
-    ...typography.title,
-    color: '#FFFFFF',
-    fontSize: 29,
-    lineHeight: 35,
-  },
-  tituloAcento: {
-    color: '#65DCE5',
-    fontSize: 30,
-    lineHeight: 37,
-    fontWeight: '800',
-  },
-  subtitulo: {
-    ...typography.body,
-    color: '#D5EAF7',
-    fontSize: 12,
-    lineHeight: 20,
-    marginTop: 10,
-  },
-  codigoPanel: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginTop: 22,
-    padding: 14,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.10)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.22)',
-  },
-  codigoIcono: {
-    width: 43,
-    height: 43,
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(92,218,232,0.20)',
-    borderWidth: 1,
-    borderColor: 'rgba(141,235,255,0.42)',
-  },
-  codigoIconoTexto: {
-    color: '#B5F6FF',
-    fontSize: 30,
-    fontWeight: '700',
-  },
-  codigoContenido: {
-    flex: 1,
-    minWidth: 0,
-  },
-  codigoEtiqueta: {
-    color: '#A6D7EA',
-    fontSize: 9,
-    letterSpacing: 1,
-    fontWeight: '700',
-    marginBottom: 5,
-  },
-  codigoValor: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  codigoPunto: {
-    width: 9,
-    height: 9,
-    borderRadius: 5,
-    backgroundColor: '#51E1AF',
-  },
-  seccion: {
-    marginHorizontal: 22,
-    marginTop: 25,
-    marginBottom: 13,
-  },
-  seccionTitulo: {
-    color: '#103E66',
-    fontSize: 19,
-    fontWeight: '800',
-  },
-  seccionSubtitulo: {
-    color: '#5A788D',
-    fontSize: 12,
-    marginTop: 4,
-  },
-  estadoPanel: {
-    marginHorizontal: 16,
-    alignItems: 'center',
-    padding: 25,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255,255,255,0.82)',
-    borderWidth: 1,
-    borderColor: '#FFFFFF',
-  },
-  cargaIcono: {
-    width: 58,
-    height: 58,
-    borderRadius: 21,
-    backgroundColor: '#DDF4FA',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 14,
-  },
-  estadoTitulo: {
-    color: '#103E66',
-    fontSize: 17,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  estadoDescripcion: {
-    color: '#5A788D',
-    fontSize: 12,
-    lineHeight: 19,
-    textAlign: 'center',
-    marginTop: 8,
-  },
-  errorPanel: {
-    marginHorizontal: 16,
-    padding: 18,
-    borderRadius: 23,
-    backgroundColor: '#FFF3F4',
-    borderWidth: 1,
-    borderColor: '#F5CDD4',
-  },
-  errorIcono: {
-    width: 43,
-    height: 43,
-    borderRadius: 15,
-    backgroundColor: '#FFE0E5',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  errorIconoTexto: {
-    color: '#C7354F',
-    fontSize: 25,
-    fontWeight: '900',
-  },
-  errorTitulo: {
-    color: '#A92D43',
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  errorDescripcion: {
-    color: '#963D4D',
-    fontSize: 12,
-    lineHeight: 19,
-    marginTop: 7,
-  },
-  botonReintentar: {
-    minHeight: 45,
-    marginTop: 15,
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#C7354F',
-  },
-  botonReintentarTexto: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '800',
-  },
-  botonReintentarFlecha: {
-    color: '#FFFFFF',
-    fontSize: 19,
-  },
-  resultadoContenedor: {
-    marginHorizontal: 16,
-  },
-  resultadoEtiqueta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 7,
-    alignSelf: 'flex-start',
-    paddingHorizontal: 11,
-    paddingVertical: 7,
-    marginBottom: 10,
-    borderRadius: 99,
-    backgroundColor: '#D9F7E9',
-    borderWidth: 1,
-    borderColor: '#B5EBD3',
-  },
-  resultadoPunto: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-    backgroundColor: '#087F62',
-  },
-  resultadoEtiquetaTexto: {
-    color: '#087F62',
-    fontSize: 9,
-    fontWeight: '800',
-    letterSpacing: 0.6,
-  },
-  medidorCardContenedor: {
-    borderRadius: 23,
-    overflow: 'hidden',
-  },
-  avisoActualizacionPanel: {
-    marginTop: 13,
-    padding: 14,
-    borderRadius: 18,
-    backgroundColor: '#FFF8E8',
-    borderWidth: 1,
-    borderColor: '#F2DDAA',
-  },
-  avisoActualizacionTitulo: {
-    color: '#80511A',
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  avisoActualizacionTexto: {
-    color: '#805E32',
-    fontSize: 12,
-    lineHeight: 18,
-    marginTop: 5,
-  },
-  decisionPanel: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12,
-    padding: 15,
-    marginTop: 13,
-    borderRadius: 20,
-    borderWidth: 1,
-  },
-  decisionPermitida: {
-    backgroundColor: 'rgba(217,247,233,0.88)',
-    borderColor: '#B5EBD3',
-  },
-  decisionBloqueada: {
-    backgroundColor: '#FFF0F2',
-    borderColor: '#F5CDD4',
-  },
-  decisionIcono: {
-    width: 36,
-    height: 36,
-    borderRadius: 13,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  decisionIconoVerde: {
-    backgroundColor: '#C1EED9',
-  },
-  decisionIconoRojo: {
-    backgroundColor: '#FFDCE2',
-  },
-  decisionIconoTexto: {
-    fontSize: 19,
-    fontWeight: '900',
-  },
-  decisionTextoVerde: {
-    color: '#087F62',
-  },
-  decisionTextoRojo: {
-    color: '#C7354F',
-  },
-  decisionContenido: {
-    flex: 1,
-  },
-  decisionTitulo: {
-    color: '#16496D',
-    fontSize: 13,
-    fontWeight: '800',
-    marginBottom: 4,
-  },
-  decisionDescripcion: {
-    color: '#286B56',
-    fontSize: 12,
-    lineHeight: 18,
-  },
-  decisionDescripcionRoja: {
-    color: '#963D4D',
-  },
-  offlinePanel: {
-    marginHorizontal: 16,
-    padding: 17,
-    borderRadius: 23,
-    backgroundColor: '#FFF8E8',
-    borderWidth: 1,
-    borderColor: '#F2DDAA',
-  },
-  offlineCabecera: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 11,
-  },
-  offlineIcono: {
-    width: 43,
-    height: 43,
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFE8B5',
-  },
-  offlineIconoTexto: {
-    color: '#A96500',
-    fontSize: 26,
-    fontWeight: '800',
-  },
-  offlineContenido: {
-    flex: 1,
-  },
-  offlineTitulo: {
-    color: '#80511A',
-    fontSize: 15,
-    fontWeight: '800',
-  },
-  offlineEtiqueta: {
-    color: '#A96500',
-    fontSize: 9,
-    fontWeight: '800',
-    letterSpacing: 0.7,
-    marginTop: 4,
-  },
-  offlineDescripcion: {
-    color: '#805E32',
-    fontSize: 12,
-    lineHeight: 19,
-    marginTop: 13,
-  },
-  accionPanel: {
-    marginHorizontal: 16,
-    marginTop: 18,
-    padding: 17,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255,255,255,0.82)',
-    borderWidth: 1,
-    borderColor: '#FFFFFF',
-    shadowColor: '#0A456A',
-    shadowOpacity: 0.08,
-    shadowRadius: 13,
-    shadowOffset: { width: 0, height: 5 },
-    elevation: 2,
-  },
-  accionCabecera: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginBottom: 16,
-  },
-  accionIcono: {
-    width: 45,
-    height: 45,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#DDF4FA',
-    borderWidth: 1,
-    borderColor: '#BDE7F2',
-  },
-  accionIconoTexto: {
-    color: '#0879B6',
-    fontSize: 25,
-    fontWeight: '800',
-  },
-  accionContenido: {
-    flex: 1,
-  },
-  accionTitulo: {
-    color: '#103E66',
-    fontSize: 15,
-    fontWeight: '800',
-  },
-  accionDescripcion: {
-    color: '#5A788D',
-    fontSize: 11,
-    lineHeight: 17,
-    marginTop: 4,
-  },
-  botonRegistrar: {
-    minHeight: 53,
-    paddingHorizontal: 16,
-    borderRadius: 17,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#087FC4',
-    borderWidth: 1,
-    borderColor: '#38B8DD',
-    shadowColor: '#087FC4',
-    shadowOpacity: 0.18,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
-  },
-  botonRegistrarPresionado: {
-    backgroundColor: '#075D92',
-  },
-  botonRegistrarTexto: {
-    color: '#FFFFFF',
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  botonRegistrarFlecha: {
-    color: '#FFFFFF',
-    fontSize: 21,
-  },
-  piePanel: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 10,
-    marginHorizontal: 16,
-    marginTop: 18,
-    padding: 14,
-    borderRadius: 18,
-    backgroundColor: 'rgba(221,244,250,0.76)',
-    borderWidth: 1,
-    borderColor: '#FFFFFF',
-  },
-  pieIcono: {
-    width: 25,
-    height: 25,
-    borderRadius: 9,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-  pieIconoTexto: {
-    color: '#0879B6',
-    fontSize: 14,
-    fontWeight: '900',
-  },
-  pieTexto: {
-    flex: 1,
-    color: '#5A788D',
-    fontSize: 11,
-    lineHeight: 17,
-  },
-  botonInicio: {
-    alignSelf: 'center',
-    marginTop: 18,
-    paddingHorizontal: 17,
-    paddingVertical: 11,
-    borderRadius: 99,
-    borderWidth: 1,
-    borderColor: '#C5E0EB',
-    backgroundColor: 'rgba(255,255,255,0.65)',
-  },
-  botonInicioTexto: {
-    color: '#315F7B',
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  presionado: {
-    opacity: 0.8,
-  },
-  pieMarca: {
-    color: '#7190A3',
-    fontSize: 9,
-    fontWeight: '700',
-    letterSpacing: 1.4,
-    textAlign: 'center',
-    marginTop: 20,
-  },
-});

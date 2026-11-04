@@ -23,9 +23,11 @@ export class ApiError extends Error {
 
 const REQUEST_TIMEOUT_MS = 10_000;
 
-export async function getJson(
+async function solicitarJson(
   resource: ApiResource,
-  query: Readonly<Record<string, string>> = {},
+  method: 'GET' | 'POST',
+  query: Readonly<Record<string, string>>,
+  body?: unknown,
 ): Promise<unknown> {
   const url = new URL(resource, `${API_BASE_URL}/`);
   for (const [key, value] of Object.entries(query)) {
@@ -43,8 +45,12 @@ export async function getJson(
     let response: Response;
     try {
       response = await fetch(url.toString(), {
-        method: 'GET',
-        headers: { Accept: 'application/json' },
+        method,
+        headers: {
+          Accept: 'application/json',
+          ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
+        },
+        ...(body === undefined ? {} : { body: JSON.stringify(body) }),
         signal: controller.signal,
       });
     } catch {
@@ -92,4 +98,18 @@ export async function getJson(
   } finally {
     clearTimeout(timeout);
   }
+}
+
+export function getJson(
+  resource: ApiResource,
+  query: Readonly<Record<string, string>> = {},
+): Promise<unknown> {
+  return solicitarJson(resource, 'GET', query);
+}
+
+export function postJson(
+  resource: ApiResource,
+  body: unknown,
+): Promise<unknown> {
+  return solicitarJson(resource, 'POST', {}, body);
 }

@@ -1,8 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import type { MedidorOficina } from '../domain/tipos';
-import { colors } from '../theme/colors';
-import { radii, spacing } from '../theme/spacing';
-import { typography } from '../theme/typography';
 
 interface MedidorCardProps {
   medidor: MedidorOficina;
@@ -16,10 +13,16 @@ export function MedidorCard({
   consultadoEn,
 }: MedidorCardProps) {
   return (
-    <View style={styles.card}>
-      <Text style={styles.kicker}>DATOS DEL MEDIDOR</Text>
-      <Text style={styles.codigo}>{medidor.codigo}</Text>
-      <Text style={styles.direccion}>{medidor.direccion}</Text>
+    <View className="gap-3 rounded-xl border border-borde bg-superficie p-4">
+      <Text className="text-xs font-medium leading-4 text-marca-oscura">
+        DATOS DEL MEDIDOR
+      </Text>
+      <Text className="font-mono text-[15px] font-medium leading-5 text-marca-oscura">
+        {medidor.codigo}
+      </Text>
+      <Text className="text-xl font-semibold leading-[26px] text-texto">
+        {medidor.direccion}
+      </Text>
 
       <Dato etiqueta="SECTOR" valor={medidor.sector ?? 'No disponible'} />
       <Dato
@@ -28,7 +31,7 @@ export function MedidorCard({
       />
       <Dato etiqueta="ESTADO DE OFICINA" valor={medidor.estadoOficina} />
 
-      <View style={styles.lecturas}>
+      <View className="gap-3 rounded-lg bg-superficie-suave p-3">
         <Dato
           etiqueta="ÚLTIMA LECTURA"
           valor={
@@ -52,15 +55,15 @@ export function MedidorCard({
       </View>
 
       <View
-        style={origen === 'oficina' ? styles.fuenteOficina : styles.fuenteCache}
+        className={`gap-1 border-l-[3px] pl-3 ${origen === 'oficina' ? 'border-exito' : 'border-informacion'}`}
         accessibilityRole="summary"
       >
-        <Text style={styles.fuenteTitulo}>
+        <Text className="text-sm font-medium leading-5 text-texto">
           {origen === 'oficina'
             ? 'Datos consultados en la oficina'
             : 'Datos de caché local'}
         </Text>
-        <Text style={styles.fuenteFecha}>
+        <Text className="text-base leading-6 text-texto-secundario">
           Consulta local: {new Date(consultadoEn).toLocaleString()}
         </Text>
       </View>
@@ -70,69 +73,11 @@ export function MedidorCard({
 
 function Dato({ etiqueta, valor }: { etiqueta: string; valor: string }) {
   return (
-    <View style={styles.dato}>
-      <Text style={styles.etiqueta}>{etiqueta}</Text>
-      <Text style={styles.valor}>{valor}</Text>
+    <View className="gap-1">
+      <Text className="text-xs font-medium leading-4 text-texto-secundario">
+        {etiqueta}
+      </Text>
+      <Text className="text-base leading-6 text-texto">{valor}</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.superficie,
-    borderColor: colors.borde,
-    borderRadius: radii.card,
-    borderWidth: 1,
-    gap: spacing.md,
-    padding: spacing.lg,
-  },
-  kicker: {
-    ...typography.caption,
-    color: colors.marcaOscura,
-  },
-  codigo: {
-    ...typography.technical,
-    color: colors.marcaOscura,
-  },
-  direccion: {
-    ...typography.section,
-    color: colors.texto,
-  },
-  dato: {
-    gap: spacing.xs,
-  },
-  etiqueta: {
-    ...typography.caption,
-    color: colors.textoSecundario,
-  },
-  valor: {
-    ...typography.body,
-    color: colors.texto,
-  },
-  lecturas: {
-    backgroundColor: colors.superficieSuave,
-    borderRadius: radii.field,
-    gap: spacing.md,
-    padding: spacing.md,
-  },
-  fuenteOficina: {
-    borderLeftColor: colors.exito,
-    borderLeftWidth: 3,
-    gap: spacing.xs,
-    paddingLeft: spacing.md,
-  },
-  fuenteCache: {
-    borderLeftColor: colors.informacion,
-    borderLeftWidth: 3,
-    gap: spacing.xs,
-    paddingLeft: spacing.md,
-  },
-  fuenteTitulo: {
-    ...typography.label,
-    color: colors.texto,
-  },
-  fuenteFecha: {
-    ...typography.body,
-    color: colors.textoSecundario,
-  },
-});

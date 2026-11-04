@@ -1,89 +1,180 @@
-import * as SecureStore from 'expo-secure-store';
-import { USUARIOS_PRUEBA } from '../data/usuarios';
+import {
+  EmailAuthProvider,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  reauthenticateWithCredential,
+  reload,
+  sendPasswordResetEmail,
+  sendEmailVerification,
+  signInWithEmailAndPassword,
+  signOut,
+  updatePassword,
+  updateProfile,
+  type Unsubscribe,
+} from 'firebase/auth';
 
-/**
- * Identificación local del técnico contra los usuarios fijos del código
- * (ADR-012). No es una autenticación contra un servidor: la aplicación no
- * dispone de servicio de autenticación remota y este servicio no debe
- * presentarse como tal.
- *
- * La sesión persistida guarda únicamente el código del empleado en
- * expo-secure-store. La clave nunca se escribe en el dispositivo.
- */
+import { auth } from '../lib/firebase';
+import { ErrorAuthAplicacion, obtenerCodigoErrorAuth } from './erroresAuth';
 
-/** Única clave de sesión en el almacén seguro. */
-const CLAVE_SESION = 'sesion_tecnico_codigo';
-
-export class CredencialesInvalidasError extends Error {
-  constructor() {
-    super('El código de empleado o la clave no coinciden.');
-    this.name = 'CredencialesInvalidasError';
-  }
+export interface UsuarioSesion {
+  uid: string;
+  email: string | null;
+  nombre: string | null;
+  emailVerificado: boolean;
 }
 
-export class SinUsuariosConfiguradosError extends Error {
-  constructor() {
-    super('La aplicación no tiene técnicos autorizados configurados.');
-    this.name = 'SinUsuariosConfiguradosError';
-  }
+function crearUsuarioSesion(
+  usuario: NonNullable<typeof auth.currentUser>,
+): UsuarioSesion {
+  return {
+    uid: usuario.uid,
+    email: usuario.email,
+    nombre: usuario.displayName,
+    emailVerificado: usuario.emailVerified,
+  };
 }
 
-/**
- * Compara el código y la clave con los usuarios fijos del código.
- * Devuelve el código del técnico identificado o lanza un error.
- */
-export async function identificarTecnico(
-  codigo: string,
+export function observarSesion(
+  alCambiar: (usuario: UsuarioSesion | null) => void,
+  alFallar: (error: Error) => void,
+): Unsubscribe {
+  return onAuthStateChanged(
+    auth,
+    (usuario) => {
+      alCambiar(usuario === null ? null : crearUsuarioSesion(usuario));
+    },
+    alFallar,
+  );
+}
+
+export async function iniciarSesion(
+  correo: string,
   clave: string,
-): Promise<string> {
-  if (USUARIOS_PRUEBA.length === 0) {
-    throw new SinUsuariosConfiguradosError();
-  }
-
-  const codigoNormalizado = codigo.trim();
-  const claveNormalizada = clave.trim();
-  const coincide = USUARIOS_PRUEBA.some(
-    (usuario) =>
-      usuario.codigo === codigoNormalizado && usuario.clave === claveNormalizada,
+): Promise<void> {
+  const { user } = await signInWithEmailAndPassword(
+    auth,
+    correo.trim().toLowerCase(),
+    clave,
   );
 
-  if (!coincide) {
-    throw new CredencialesInvalidasError();
+  if (!user.emailVerified) {
+    throw new ErrorAuthAplicacion(
+      'auth/email-not-verified',
+      'Debes verificar tu correo para acceder.',
+    );
   }
-
-  return codigoNormalizado;
 }
 
-/** Guarda el código del empleado como sesión activa (nunca la clave). */
-export async function guardarSesion(codigo: string): Promise<void> {
-  const codigoNormalizado = codigo.trim();
-  if (codigoNormalizado.length === 0) {
-    throw new TypeError('La sesión necesita el código del empleado.');
-  }
+export async function registrarse(
+  nombre: string,
+  correo: string,
+  clave: string,
+): Promise<void> {
+  const { user } = await createUserWithEmailAndPassword(
+    auth,
+    correo.trim().toLowerCase(),
+    clave,
+  );
 
-  await SecureStore.setItemAsync(CLAVE_SESION, codigoNormalizado);
+  await updateProfile(user, { displayName: nombre.trim() });
+  await sendEmailVerification(user);
 }
 
-/**
- * Lee la sesión persistida. Devuelve el código del técnico o null si no
- * hay sesión o el valor guardado no es utilizable.
- */
-export async function leerSesion(): Promise<string | null> {
-  const valor = await SecureStore.getItemAsync(CLAVE_SESION);
-  if (valor === null) {
+export async function reenviarVerificacion(): Promise<void> {
+  const usuario = auth.currentUser;
+
+  if (usuario === null) {
+    throw new ErrorAuthAplicacion(
+      'auth/session-unavailable',
+      'No hay una sesión activa. Inicia sesión nuevamente.',
+    );
+  }
+
+  if (usuario.emailVerified) {
+    throw new ErrorAuthAplicacion(
+      'auth/email-already-verified',
+      'Este correo ya está verificado.',
+    );
+  }
+
+  await sendEmailVerification(usuario);
+}
+
+export async function recargarUsuario(): Promise<UsuarioSesion | null> {
+  const usuario = auth.currentUser;
+
+  if (usuario === null) {
     return null;
   }
 
-  const codigo = valor.trim();
-  if (codigo.length === 0) {
-    await borrarSesion();
-    return null;
-  }
+  await reload(usuario);
 
-  return codigo;
+  const usuarioActualizado = auth.currentUser;
+  return usuarioActualizado === null
+    ? null
+    : crearUsuarioSesion(usuarioActualizado);
 }
 
-/** Borra la sesión persistida. Se usa al cerrar sesión. */
-export async function borrarSesion(): Promise<void> {
-  await SecureStore.deleteItemAsync(CLAVE_SESION);
+export async function enviarCorreoRecuperacion(
+  correo: string,
+): Promise<void> {
+  try {
+    await sendPasswordResetEmail(auth, correo.trim().toLowerCase());
+  } catch (error: unknown) {
+    if (obtenerCodigoErrorAuth(error) === 'auth/user-not-found') {
+      return;
+    }
+
+    throw error;
+  }
+}
+
+export async function cambiarClave(
+  claveActual: string,
+  claveNueva: string,
+): Promise<void> {
+  const usuario = auth.currentUser;
+
+  if (usuario === null) {
+    throw new ErrorAuthAplicacion(
+      'auth/session-unavailable',
+      'No hay una sesión activa. Inicia sesión nuevamente.',
+    );
+  }
+
+  if (usuario.email === null) {
+    throw new ErrorAuthAplicacion(
+      'auth/email-unavailable',
+      'La cuenta activa no tiene un correo para reautenticarse.',
+    );
+  }
+
+  const credencial = EmailAuthProvider.credential(usuario.email, claveActual);
+  await reauthenticateWithCredential(usuario, credencial);
+  await updatePassword(usuario, claveNueva);
+}
+
+export async function actualizarNombre(
+  nombre: string,
+): Promise<UsuarioSesion> {
+  const usuario = auth.currentUser;
+
+  if (usuario === null) {
+    throw new ErrorAuthAplicacion(
+      'auth/session-unavailable',
+      'No hay una sesión activa. Inicia sesión nuevamente.',
+    );
+  }
+
+  const nombreActualizado = nombre.trim();
+  await updateProfile(usuario, { displayName: nombreActualizado });
+
+  return {
+    ...crearUsuarioSesion(usuario),
+    nombre: nombreActualizado,
+  };
+}
+
+export async function cerrarSesion(): Promise<void> {
+  await signOut(auth);
 }

@@ -1,37 +1,10 @@
 import { useEffect, useState } from 'react';
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useConexion } from '../../../contexts/ConexionContext';
 import { useRegistro } from '../../../contexts/RegistroContext';
 import { calcularConsumo, esAnomalo } from '../../../domain/consumo';
 import { useMedidorQuery } from '../../../hooks/useMedidorQuery';
-import { spacing } from '../../../theme/spacing';
-import { typography } from '../../../theme/typography';
-
-const COLORES = {
-  fondo: '#EAF4F8',
-  azulOscuro: '#062B52',
-  azul: '#087FC4',
-  azulPresionado: '#075D92',
-  celeste: '#63D2F0',
-  texto: '#17324D',
-  secundario: '#617A90',
-  blanco: '#FFFFFF',
-  borde: '#D8E8F1',
-  verde: '#087F62',
-  verdeFondo: '#E6F6EF',
-  naranja: '#A96500',
-  naranjaFondo: '#FFF4DF',
-  rojo: '#C7354F',
-  rojoFondo: '#FCE9EC',
-  sombra: '#123B5A',
-};
 
 export default function RevisionConsumoScreen() {
   const {
@@ -64,12 +37,12 @@ export default function RevisionConsumoScreen() {
 
   if (cargandoBorrador) {
     return (
-      <View style={styles.pantallaCarga}>
-        <View style={styles.iconoCarga}>
-          <Text style={styles.iconoCargaTexto}>03</Text>
+      <View className={"flex-1 bg-[#EAF4F8] justify-center items-center px-[28px]"}>
+        <View className={"w-[62px] h-[62px] rounded-[21px] bg-[#062B52] items-center justify-center mb-[18px]"}>
+          <Text className={"text-[#63D2F0] text-[22px] font-[900]"}>03</Text>
         </View>
-        <Text style={styles.tituloCarga}>Revisión del consumo</Text>
-        <Text style={styles.descripcionCarga}>
+        <Text className={"text-[#062B52] text-[22px] font-[800] text-center"}>Revisión del consumo</Text>
+        <Text className={"text-[16px] font-[400] leading-[22px] text-[#617A90] text-center mt-[8px] mb-[20px]"}>
           Recuperando el registro guardado…
         </Text>
       </View>
@@ -78,24 +51,21 @@ export default function RevisionConsumoScreen() {
 
   if (codigoMedidor === null || estado === null) {
     return (
-      <View style={styles.pantallaCarga}>
-        <View style={styles.iconoCarga}>
-          <Text style={styles.iconoCargaTexto}>!</Text>
+      <View className={"flex-1 bg-[#EAF4F8] justify-center items-center px-[28px]"}>
+        <View className={"w-[62px] h-[62px] rounded-[21px] bg-[#062B52] items-center justify-center mb-[18px]"}>
+          <Text className={"text-[#63D2F0] text-[22px] font-[900]"}>!</Text>
         </View>
-        <Text style={styles.tituloCarga}>Completa los pasos anteriores</Text>
-        <Text style={styles.descripcionCarga}>
+        <Text className={"text-[#062B52] text-[22px] font-[800] text-center"}>Completa los pasos anteriores</Text>
+        <Text className={"text-[16px] font-[400] leading-[22px] text-[#617A90] text-center mt-[8px] mb-[20px]"}>
           Primero completa los datos de lectura del asistente.
         </Text>
 
         <Pressable
           accessibilityRole="button"
           onPress={() => router.push('/medidor')}
-          style={({ pressed }) => [
-            styles.botonPrincipal,
-            pressed && styles.botonPresionado,
-          ]}
+          className={["shadow-[0px_4px_8px_rgba(6,43,82,0.15)] min-h-[54px] mt-[23px] px-[18px] rounded-[17px] bg-[#087FC4] flex-row items-center justify-center gap-[10px]", "active:bg-[#075D92]"].filter(Boolean).join(' ')}
         >
-          <Text style={styles.textoBotonPrincipal}>Consultar medidor</Text>
+          <Text className={"text-[14px] font-[500] leading-[20px] text-blanco text-center shrink"}>Consultar medidor</Text>
         </Pressable>
       </View>
     );
@@ -130,72 +100,69 @@ export default function RevisionConsumoScreen() {
   const contenidoSinLectura = lecturaActual === null;
 
   return (
-    <View style={styles.pantalla}>
+    <View className={"flex-1 bg-[#EAF4F8]"}>
       <ScrollView
-        contentContainerStyle={styles.contenido}
+        contentContainerClassName={"pb-[24px]"}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.encabezado}>
-          <View style={styles.orbeSuperior} />
-          <View style={styles.orbeInferior} />
+        <View className={"bg-[#062B52] rounded-bl-[30px] rounded-br-[30px] overflow-hidden px-[24px] pt-[24px] pb-[30px]"}>
+          <View className={"absolute w-[210px] h-[210px] rounded-[105px] bg-[rgba(34,178,224,0.13)] -top-[105px] -right-[50px]"} />
+          <View className={"absolute w-[150px] h-[150px] rounded-[75px] bg-[rgba(0,207,190,0.10)] -bottom-[80px] left-[42%]"} />
 
-          <View style={styles.marca}>
-            <View style={styles.marcaPunto} />
-            <Text style={styles.marcaTexto}>LECTURA ÁGIL · EPMAPS</Text>
+          <View className={"flex-row items-center gap-[8px] mb-[26px]"}>
+            <View className={"w-[8px] h-[8px] rounded-[4px] bg-[#63D2F0]"} />
+            <Text className={"text-[11px] font-[500] leading-[20px] text-blanco tracking-[1.2px]"}>LECTURA ÁGIL · EPMAPS</Text>
           </View>
 
-          <Text style={styles.kicker}>PASO 3 DE 5 · CONSUMO</Text>
+          <Text className={"text-[11px] font-[500] leading-[20px] text-[#8EDCF5] tracking-[1.4px] mb-[9px]"}>PASO 3 DE 5 · CONSUMO</Text>
 
-          <Text style={styles.titulo}>
+          <Text className={"text-blanco text-[30px] font-[800] -tracking-[0.8px]"}>
             Revisión del{' '}
-            <Text style={styles.tituloAcento}>consumo</Text>
+            <Text className={"text-[#63D2F0]"}>consumo</Text>
           </Text>
 
-          <Text style={styles.subtitulo}>
+          <Text className={"text-[16px] font-[400] leading-[22px] text-[#D5EAF7] mt-[10px]"}>
             Comprueba los valores calculados antes de continuar con el registro.
           </Text>
 
-          <View style={styles.progreso}>
+          <View className={"flex-row gap-[6px] mt-[24px]"}>
             {[1, 2, 3, 4, 5].map((paso) => (
               <View
                 key={paso}
-                style={[
-                  styles.progresoSegmento,
-                  paso <= 3 && styles.progresoActivo,
-                ]}
+                className={(paso <= 3 ? "flex-1 h-[4px] rounded-[2px] bg-[#63D2F0]" : "flex-1 h-[4px] rounded-[2px] bg-[rgba(255,255,255,0.22)]")}
               />
             ))}
           </View>
         </View>
 
-        <View style={styles.cuerpo}>
-          <View style={styles.tarjetaMedidor}>
-            <View style={styles.iconoMedidor}>
-              <Text style={styles.iconoMedidorTexto}>M</Text>
+        <View className={"px-[20px] pt-[22px]"}>
+          <View className={"shadow-[0px_5px_12px_rgba(18,59,90,0.06)] bg-blanco rounded-[22px] border-[1px] border-[#D8E8F1] p-[17px] flex-row items-center gap-[12px]"}>
+            <View className={"w-[45px] h-[45px] rounded-[15px] items-center justify-center bg-[#E5F5FC]"}>
+              <Text className={"text-[#087FC4] text-[21px] font-[800]"}>M</Text>
             </View>
 
-            <View style={styles.infoMedidor}>
-              <Text style={styles.etiquetaPequena}>CÓDIGO DEL MEDIDOR</Text>
-              <Text style={styles.codigoMedidor}>{codigoMedidor}</Text>
+            <View className={"flex-1"}>
+              <Text className={"text-[10px] font-[500] leading-[20px] text-[#617A90] tracking-[0.7px]"}>CÓDIGO DEL MEDIDOR</Text>
+              <Text className={"text-[#062B52] text-[20px] font-[800] mt-[4px]"}>{codigoMedidor}</Text>
             </View>
 
-            <View style={styles.pasoPildora}>
-              <Text style={styles.pasoPildoraTexto}>Paso 3</Text>
+            <View className={"bg-[#E5F5FC] rounded-[20px] px-[11px] py-[7px]"}>
+              <Text className={"text-[#087FC4] text-[11px] font-[800]"}>Paso 3</Text>
             </View>
           </View>
 
           {contenidoSinLectura ? (
             <>
-              <View style={styles.tarjetaSinLectura}>
-                <View style={styles.iconoSinLectura}>
-                  <Text style={styles.iconoSinLecturaTexto}>i</Text>
+              <View className={"items-center bg-blanco border-[1px] border-[#D8E8F1] rounded-[23px] p-[23px] mt-[20px]"}>
+                <View className={"w-[52px] h-[52px] rounded-[18px] bg-[#E5F5FC] items-center justify-center mb-[15px]"}>
+                  <Text className={"text-[#087FC4] text-[25px] font-[900]"}>i</Text>
                 </View>
 
-                <Text style={styles.tituloTarjeta}>
+                <Text className={"text-[#062B52] text-[18px] font-[800] text-center"}>
                   No hay consumo que calcular
                 </Text>
 
-                <Text style={styles.textoSinLectura}>
+                <Text className={"text-[16px] font-[400] leading-[22px] text-[#617A90] text-center mt-[9px]"}>
                   Este registro no incluye una lectura numérica porque el
                   medidor está{' '}
                   {estado === 'inaccesible' ? 'inaccesible' : 'dañado'}.
@@ -206,88 +173,85 @@ export default function RevisionConsumoScreen() {
               <Pressable
                 accessibilityRole="button"
                 onPress={avanzar}
-                style={({ pressed }) => [
-                  styles.botonPrincipal,
-                  pressed && styles.botonPresionado,
-                ]}
+                className={["shadow-[0px_4px_8px_rgba(6,43,82,0.15)] min-h-[54px] mt-[23px] px-[18px] rounded-[17px] bg-[#087FC4] flex-row items-center justify-center gap-[10px]", "active:bg-[#075D92]"].filter(Boolean).join(' ')}
               >
-                <Text style={styles.textoBotonPrincipal}>
+                <Text className={"text-[14px] font-[500] leading-[20px] text-blanco text-center shrink"}>
                   Siguiente: fotografía
                 </Text>
-                <Text style={styles.flechaBoton}>→</Text>
+                <Text className={"text-blanco text-[20px] font-[700]"}>→</Text>
               </Pressable>
             </>
           ) : (
             <>
-              <View style={styles.encabezadoSeccion}>
-                <Text style={styles.tituloSeccion}>Resumen de lecturas</Text>
-                <Text style={styles.descripcionSeccion}>
+              <View className={"mt-[25px] mb-[14px]"}>
+                <Text className={"text-[#062B52] text-[19px] font-[800]"}>Resumen de lecturas</Text>
+                <Text className={"text-[16px] font-[400] leading-[21px] text-[#617A90] mt-[5px]"}>
                   Valores utilizados para calcular el consumo.
                 </Text>
               </View>
 
-              <View style={styles.tarjetaLecturas}>
-                <View style={styles.filaLectura}>
-                  <View style={styles.datoLectura}>
-                    <Text style={styles.etiqueta}>LECTURA ANTERIOR</Text>
-                    <Text style={styles.valorLectura}>
+              <View className={"bg-blanco rounded-[22px] border-[1px] border-[#D8E8F1] px-[18px] py-[6px]"}>
+                <View className={"flex-row items-center justify-between py-[16px] gap-[12px]"}>
+                  <View className={"flex-1 gap-[7px]"}>
+                    <Text className={"text-[10px] font-[500] leading-[20px] text-[#617A90] tracking-[0.8px]"}>LECTURA ANTERIOR</Text>
+                    <Text className={"text-[#062B52] text-[21px] font-[800]"}>
                       {lecturaAnterior ?? 'Sin dato previo'}
                     </Text>
                   </View>
-                  <View style={styles.miniIcono}>
-                    <Text style={styles.miniIconoTexto}>01</Text>
+                  <View className={"w-[38px] h-[38px] rounded-[13px] bg-[#EDF3F7] items-center justify-center"}>
+                    <Text className={"text-[#617A90] text-[12px] font-[800]"}>01</Text>
                   </View>
                 </View>
 
-                <View style={styles.divisor} />
+                <View className={"h-[1px] bg-[#E8F0F5]"} />
 
-                <View style={styles.filaLectura}>
-                  <View style={styles.datoLectura}>
-                    <Text style={styles.etiqueta}>LECTURA ACTUAL</Text>
-                    <Text style={styles.valorLectura}>{lecturaActual}</Text>
+                <View className={"flex-row items-center justify-between py-[16px] gap-[12px]"}>
+                  <View className={"flex-1 gap-[7px]"}>
+                    <Text className={"text-[10px] font-[500] leading-[20px] text-[#617A90] tracking-[0.8px]"}>LECTURA ACTUAL</Text>
+                    <Text className={"text-[#062B52] text-[21px] font-[800]"}>{lecturaActual}</Text>
                   </View>
-                  <View style={[styles.miniIcono, styles.miniIconoActual]}>
-                    <Text style={styles.miniIconoActualTexto}>02</Text>
+                  <View className={"w-[38px] h-[38px] rounded-[13px] bg-[#E2F5FC] items-center justify-center"}>
+                    <Text className={"text-[#087FC4] text-[12px] font-[800]"}>02</Text>
                   </View>
                 </View>
               </View>
 
-              <View style={styles.tarjetaConsumo} accessibilityRole="summary">
-                <View style={styles.encabezadoConsumo}>
-                  <View style={styles.puntoConsumo} />
-                  <Text style={styles.etiquetaConsumo}>
+              <View className={"bg-[#062B52] rounded-[24px] p-[22px] mt-[17px] overflow-hidden"} accessibilityRole="summary">
+                <View className={"flex-row items-center gap-[9px]"}>
+                  <View className={"w-[8px] h-[8px] rounded-[4px] bg-[#63D2F0]"} />
+                  <Text className={"text-[11px] font-[500] leading-[20px] text-[#B8D9EB] tracking-[1px]"}>
                     CONSUMO CALCULADO
                   </Text>
                 </View>
 
-                <Text style={styles.valorConsumo}>
+                <Text className={"text-blanco text-[38px] font-[900] mt-[15px]"}>
                   {consumo === null ? 'No calculable' : String(consumo)}
                 </Text>
 
-                <Text style={styles.unidadConsumo}>
+                <Text className={"text-[#9CC9E1] text-[12px] mt-[4px]"}>
                   {consumo === null
                     ? 'Falta una lectura anterior válida'
                     : 'Unidades de consumo'}
                 </Text>
 
-                <View style={styles.divisorConsumo} />
+                <View className={"h-[1px] bg-[rgba(255,255,255,0.17)] my-[16px]"} />
 
-                <Text style={styles.notaConsumo}>
+                <Text className={"text-[16px] font-[400] leading-[21px] text-[#D5EAF7]"}>
                   {consumo === null
                     ? 'Sin lectura anterior no se puede calcular el consumo. Al volver la conexión, la oficina permitirá verificarlo.'
                     : 'Lectura actual menos lectura anterior.'}
                 </Text>
               </View>
 
-              <View style={styles.tarjetaPromedio}>
-                <View style={styles.iconoPromedio}>
-                  <Text style={styles.iconoPromedioTexto}>↗</Text>
+              <View className={"flex-row items-center gap-[13px] bg-blanco rounded-[20px] border-[1px] border-[#D8E8F1] p-[16px] mt-[15px]"}>
+                <View className={"w-[42px] h-[42px] rounded-[14px] bg-[#E5F5FC] items-center justify-center"}>
+                  <Text className={"text-[#087FC4] text-[22px] font-[800]"}>↗</Text>
                 </View>
-                <View style={styles.infoPromedio}>
-                  <Text style={styles.etiquetaPromedio}>
+                <View className={"flex-1 gap-[5px]"}>
+                  <Text className={"text-[10px] font-[500] leading-[20px] text-[#617A90] tracking-[0.5px]"}>
                     PROMEDIO MENSUAL DE REFERENCIA
                   </Text>
-                  <Text style={styles.valorPromedio}>
+                  <Text className={"text-[#062B52] text-[18px] font-[800]"}>
                     {promedioMensual === null
                       ? 'No disponible'
                       : String(promedioMensual)}
@@ -296,14 +260,14 @@ export default function RevisionConsumoScreen() {
               </View>
 
               {anomalo === true && (
-                <View style={styles.tarjetaAnomalia} accessibilityRole="summary">
-                  <View style={styles.filaAlerta}>
-                    <View style={styles.iconoAlerta}>
-                      <Text style={styles.iconoAlertaTexto}>!</Text>
+                <View className={"bg-blanco border-[#F0D7A7] border-[1px] rounded-[22px] p-[17px] mt-[17px] gap-[16px]"} accessibilityRole="summary">
+                  <View className={"flex-row items-start gap-[12px]"}>
+                    <View className={"w-[36px] h-[36px] rounded-[12px] bg-[#FFF4DF] items-center justify-center"}>
+                      <Text className={"text-[#A96500] text-[20px] font-[900]"}>!</Text>
                     </View>
-                    <View style={styles.infoAlerta}>
-                      <Text style={styles.tituloAlerta}>Consumo anómalo</Text>
-                      <Text style={styles.textoAlerta}>
+                    <View className={"flex-1 gap-[6px]"}>
+                      <Text className={"text-[#A96500] text-[16px] font-[800]"}>Consumo anómalo</Text>
+                      <Text className={"text-[16px] font-[400] leading-[21px] text-[#17324D]"}>
                         El consumo supera el triple del promedio mensual.
                         Revisa la lectura y confirma que la verificaste.
                         Este registro exigirá una fotografía.
@@ -323,25 +287,17 @@ export default function RevisionConsumoScreen() {
                       });
                       setErrorConfirmacion(null);
                     }}
-                    style={[
-                      styles.confirmacion,
-                      datos.confirmacionAnomalia === true &&
-                        styles.confirmacionMarcada,
-                    ]}
+                    className={(datos.confirmacionAnomalia === true ? "min-h-[54px] flex-row items-center gap-[11px] px-[13px] py-[12px] rounded-[15px] border-[1px] border-[#087F62] bg-[#E6F6EF]" : "min-h-[54px] flex-row items-center gap-[11px] px-[13px] py-[12px] rounded-[15px] border-[1px] border-[#D8E8F1] bg-[#F7FAFC]")}
                   >
                     <View
-                      style={[
-                        styles.checkbox,
-                        datos.confirmacionAnomalia === true &&
-                          styles.checkboxMarcado,
-                      ]}
+                      className={(datos.confirmacionAnomalia === true ? "w-[23px] h-[23px] rounded-[7px] border-[1.5px] border-[#087F62] items-center justify-center bg-[#087F62]" : "w-[23px] h-[23px] rounded-[7px] border-[1.5px] border-[#9CB2C2] items-center justify-center")}
                     >
                       {datos.confirmacionAnomalia === true && (
-                        <Text style={styles.checkTexto}>✓</Text>
+                        <Text className={"text-blanco text-[15px] font-[900]"}>✓</Text>
                       )}
                     </View>
 
-                    <Text style={styles.confirmacionTexto}>
+                    <Text className={"flex-1 text-[#17324D] text-[13px] font-[700] leading-[19px]"}>
                       {datos.confirmacionAnomalia === true
                         ? 'Confirmado: revisé el consumo anómalo'
                         : 'Confirmar que revisé el consumo anómalo'}
@@ -349,7 +305,7 @@ export default function RevisionConsumoScreen() {
                   </Pressable>
 
                   {errorConfirmacion !== null && (
-                    <Text accessibilityRole="alert" style={styles.error}>
+                    <Text accessibilityRole="alert" className={"text-[16px] font-[400] leading-[20px] text-[#C7354F]"}>
                       {errorConfirmacion}
                     </Text>
                   )}
@@ -357,15 +313,15 @@ export default function RevisionConsumoScreen() {
               )}
 
               {anomalo === false && (
-                <View style={styles.tarjetaNormal}>
-                  <View style={styles.iconoNormal}>
-                    <Text style={styles.iconoNormalTexto}>✓</Text>
+                <View className={"flex-row items-start gap-[12px] p-[16px] mt-[17px] rounded-[19px] border-[1px] border-[#B9E5D3] bg-[#E6F6EF]"}>
+                  <View className={"w-[32px] h-[32px] rounded-[11px] bg-[#C9EFDF] items-center justify-center"}>
+                    <Text className={"text-[#087F62] text-[18px] font-[900]"}>✓</Text>
                   </View>
-                  <View style={styles.infoNormal}>
-                    <Text style={styles.tituloNormal}>
+                  <View className={"flex-1 gap-[5px]"}>
+                    <Text className={"text-[#087F62] text-[14px] font-[800]"}>
                       Consumo dentro del rango esperado
                     </Text>
-                    <Text style={styles.textoNormal}>
+                    <Text className={"text-[16px] font-[400] leading-[20px] text-[#285D4D]"}>
                       El consumo no supera el triple del promedio mensual.
                     </Text>
                   </View>
@@ -375,23 +331,20 @@ export default function RevisionConsumoScreen() {
               <Pressable
                 accessibilityRole="button"
                 onPress={avanzar}
-                style={({ pressed }) => [
-                  styles.botonPrincipal,
-                  pressed && styles.botonPresionado,
-                ]}
+                className={["shadow-[0px_4px_8px_rgba(6,43,82,0.15)] min-h-[54px] mt-[23px] px-[18px] rounded-[17px] bg-[#087FC4] flex-row items-center justify-center gap-[10px]", "active:bg-[#075D92]"].filter(Boolean).join(' ')}
               >
-                <Text style={styles.textoBotonPrincipal}>
+                <Text className={"text-[14px] font-[500] leading-[20px] text-blanco text-center shrink"}>
                   Siguiente: fotografía
                 </Text>
-                <Text style={styles.flechaBoton}>→</Text>
+                <Text className={"text-blanco text-[20px] font-[700]"}>→</Text>
               </Pressable>
             </>
           )}
 
           {!enLinea && (
-            <View style={styles.estadoConexion}>
-              <View style={styles.puntoSinConexion} />
-              <Text style={styles.textoConexion}>
+            <View className={"flex-row items-center self-start gap-[8px] mt-[15px] px-[12px] py-[8px] rounded-[20px] bg-[#FFF4DF]"}>
+              <View className={"w-[7px] h-[7px] rounded-[4px] bg-[#A96500]"} />
+              <Text className={"text-[#A96500] text-[12px] font-[700]"}>
                 Modo sin conexión
               </Text>
             </View>
@@ -400,17 +353,14 @@ export default function RevisionConsumoScreen() {
           <Pressable
             accessibilityRole="button"
             onPress={() => router.push('/registro/datos_lectura')}
-            style={({ pressed }) => [
-              styles.botonSecundario,
-              pressed && styles.botonSecundarioPresionado,
-            ]}
+            className={["min-h-[48px] mt-[12px] rounded-[16px] border-[1px] border-[#C9DFEB] bg-[rgba(255,255,255,0.72)] items-center justify-center px-[14px]", "active:bg-[#DCEEF6]"].filter(Boolean).join(' ')}
           >
-            <Text style={styles.textoBotonSecundario}>
+            <Text className={"text-[#062B52] text-[13px] font-[700]"}>
               ← Volver a los datos de lectura
             </Text>
           </Pressable>
 
-          <Text style={styles.pie}>
+          <Text className={"text-[12px] font-[500] leading-[16px] text-[#7890A3] text-center mt-[23px] mb-[8px]"}>
             EPMAPS · Registro de lectura de medidores
           </Text>
         </View>
@@ -418,582 +368,3 @@ export default function RevisionConsumoScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  pantalla: {
-    flex: 1,
-    backgroundColor: COLORES.fondo,
-  },
-  contenido: {
-    paddingBottom: spacing.xl,
-  },
-  encabezado: {
-    backgroundColor: COLORES.azulOscuro,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    overflow: 'hidden',
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 30,
-  },
-  orbeSuperior: {
-    position: 'absolute',
-    width: 210,
-    height: 210,
-    borderRadius: 105,
-    backgroundColor: 'rgba(34,178,224,0.13)',
-    top: -105,
-    right: -50,
-  },
-  orbeInferior: {
-    position: 'absolute',
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    backgroundColor: 'rgba(0,207,190,0.10)',
-    bottom: -80,
-    left: '42%',
-  },
-  marca: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 26,
-  },
-  marcaPunto: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: COLORES.celeste,
-  },
-  marcaTexto: {
-    ...typography.label,
-    color: COLORES.blanco,
-    letterSpacing: 1.2,
-    fontSize: 11,
-  },
-  kicker: {
-    ...typography.label,
-    color: '#8EDCF5',
-    fontSize: 11,
-    letterSpacing: 1.4,
-    marginBottom: 9,
-  },
-  titulo: {
-    color: COLORES.blanco,
-    fontSize: 30,
-    fontWeight: '800',
-    letterSpacing: -0.8,
-  },
-  tituloAcento: {
-    color: COLORES.celeste,
-  },
-  subtitulo: {
-    ...typography.body,
-    color: '#D5EAF7',
-    lineHeight: 22,
-    marginTop: 10,
-  },
-  progreso: {
-    flexDirection: 'row',
-    gap: 6,
-    marginTop: 24,
-  },
-  progresoSegmento: {
-    flex: 1,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.22)',
-  },
-  progresoActivo: {
-    backgroundColor: COLORES.celeste,
-  },
-  cuerpo: {
-    paddingHorizontal: 20,
-    paddingTop: 22,
-  },
-  tarjetaMedidor: {
-    backgroundColor: COLORES.blanco,
-    borderRadius: 22,
-    borderWidth: 1,
-    borderColor: COLORES.borde,
-    padding: 17,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    shadowColor: COLORES.sombra,
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 2,
-  },
-  iconoMedidor: {
-    width: 45,
-    height: 45,
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#E5F5FC',
-  },
-  iconoMedidorTexto: {
-    color: COLORES.azul,
-    fontSize: 21,
-    fontWeight: '800',
-  },
-  infoMedidor: {
-    flex: 1,
-  },
-  etiquetaPequena: {
-    ...typography.label,
-    color: COLORES.secundario,
-    fontSize: 10,
-    letterSpacing: 0.7,
-  },
-  codigoMedidor: {
-    color: COLORES.azulOscuro,
-    fontSize: 20,
-    fontWeight: '800',
-    marginTop: 4,
-  },
-  pasoPildora: {
-    backgroundColor: '#E5F5FC',
-    borderRadius: 20,
-    paddingHorizontal: 11,
-    paddingVertical: 7,
-  },
-  pasoPildoraTexto: {
-    color: COLORES.azul,
-    fontSize: 11,
-    fontWeight: '800',
-  },
-  encabezadoSeccion: {
-    marginTop: 25,
-    marginBottom: 14,
-  },
-  tituloSeccion: {
-    color: COLORES.azulOscuro,
-    fontSize: 19,
-    fontWeight: '800',
-  },
-  descripcionSeccion: {
-    ...typography.body,
-    color: COLORES.secundario,
-    lineHeight: 21,
-    marginTop: 5,
-  },
-  tarjetaLecturas: {
-    backgroundColor: COLORES.blanco,
-    borderRadius: 22,
-    borderWidth: 1,
-    borderColor: COLORES.borde,
-    paddingHorizontal: 18,
-    paddingVertical: 6,
-  },
-  filaLectura: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 16,
-    gap: 12,
-  },
-  datoLectura: {
-    flex: 1,
-    gap: 7,
-  },
-  etiqueta: {
-    ...typography.label,
-    color: COLORES.secundario,
-    fontSize: 10,
-    letterSpacing: 0.8,
-  },
-  valorLectura: {
-    color: COLORES.azulOscuro,
-    fontSize: 21,
-    fontWeight: '800',
-  },
-  miniIcono: {
-    width: 38,
-    height: 38,
-    borderRadius: 13,
-    backgroundColor: '#EDF3F7',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  miniIconoTexto: {
-    color: COLORES.secundario,
-    fontSize: 12,
-    fontWeight: '800',
-  },
-  miniIconoActual: {
-    backgroundColor: '#E2F5FC',
-  },
-  miniIconoActualTexto: {
-    color: COLORES.azul,
-    fontSize: 12,
-    fontWeight: '800',
-  },
-  divisor: {
-    height: 1,
-    backgroundColor: '#E8F0F5',
-  },
-  tarjetaConsumo: {
-    backgroundColor: COLORES.azulOscuro,
-    borderRadius: 24,
-    padding: 22,
-    marginTop: 17,
-    overflow: 'hidden',
-  },
-  encabezadoConsumo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 9,
-  },
-  puntoConsumo: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: COLORES.celeste,
-  },
-  etiquetaConsumo: {
-    ...typography.label,
-    color: '#B8D9EB',
-    fontSize: 11,
-    letterSpacing: 1,
-  },
-  valorConsumo: {
-    color: COLORES.blanco,
-    fontSize: 38,
-    fontWeight: '900',
-    marginTop: 15,
-  },
-  unidadConsumo: {
-    color: '#9CC9E1',
-    fontSize: 12,
-    marginTop: 4,
-  },
-  divisorConsumo: {
-    height: 1,
-    backgroundColor: 'rgba(255,255,255,0.17)',
-    marginVertical: 16,
-  },
-  notaConsumo: {
-    ...typography.body,
-    color: '#D5EAF7',
-    lineHeight: 21,
-  },
-  tarjetaPromedio: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 13,
-    backgroundColor: COLORES.blanco,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: COLORES.borde,
-    padding: 16,
-    marginTop: 15,
-  },
-  iconoPromedio: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    backgroundColor: '#E5F5FC',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconoPromedioTexto: {
-    color: COLORES.azul,
-    fontSize: 22,
-    fontWeight: '800',
-  },
-  infoPromedio: {
-    flex: 1,
-    gap: 5,
-  },
-  etiquetaPromedio: {
-    ...typography.label,
-    color: COLORES.secundario,
-    fontSize: 10,
-    letterSpacing: 0.5,
-  },
-  valorPromedio: {
-    color: COLORES.azulOscuro,
-    fontSize: 18,
-    fontWeight: '800',
-  },
-  tarjetaAnomalia: {
-    backgroundColor: COLORES.blanco,
-    borderColor: '#F0D7A7',
-    borderWidth: 1,
-    borderRadius: 22,
-    padding: 17,
-    marginTop: 17,
-    gap: 16,
-  },
-  filaAlerta: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12,
-  },
-  iconoAlerta: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
-    backgroundColor: COLORES.naranjaFondo,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconoAlertaTexto: {
-    color: COLORES.naranja,
-    fontSize: 20,
-    fontWeight: '900',
-  },
-  infoAlerta: {
-    flex: 1,
-    gap: 6,
-  },
-  tituloAlerta: {
-    color: COLORES.naranja,
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  textoAlerta: {
-    ...typography.body,
-    color: COLORES.texto,
-    lineHeight: 21,
-  },
-  confirmacion: {
-    minHeight: 54,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 11,
-    paddingHorizontal: 13,
-    paddingVertical: 12,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: COLORES.borde,
-    backgroundColor: '#F7FAFC',
-  },
-  confirmacionMarcada: {
-    borderColor: COLORES.verde,
-    backgroundColor: COLORES.verdeFondo,
-  },
-  checkbox: {
-    width: 23,
-    height: 23,
-    borderRadius: 7,
-    borderWidth: 1.5,
-    borderColor: '#9CB2C2',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkboxMarcado: {
-    backgroundColor: COLORES.verde,
-    borderColor: COLORES.verde,
-  },
-  checkTexto: {
-    color: COLORES.blanco,
-    fontSize: 15,
-    fontWeight: '900',
-  },
-  confirmacionTexto: {
-    flex: 1,
-    color: COLORES.texto,
-    fontSize: 13,
-    fontWeight: '700',
-    lineHeight: 19,
-  },
-  error: {
-    ...typography.body,
-    color: COLORES.rojo,
-    lineHeight: 20,
-  },
-  tarjetaNormal: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12,
-    padding: 16,
-    marginTop: 17,
-    borderRadius: 19,
-    borderWidth: 1,
-    borderColor: '#B9E5D3',
-    backgroundColor: COLORES.verdeFondo,
-  },
-  iconoNormal: {
-    width: 32,
-    height: 32,
-    borderRadius: 11,
-    backgroundColor: '#C9EFDF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconoNormalTexto: {
-    color: COLORES.verde,
-    fontSize: 18,
-    fontWeight: '900',
-  },
-  infoNormal: {
-    flex: 1,
-    gap: 5,
-  },
-  tituloNormal: {
-    color: COLORES.verde,
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  textoNormal: {
-    ...typography.body,
-    color: '#285D4D',
-    lineHeight: 20,
-  },
-  tarjetaSinLectura: {
-    alignItems: 'center',
-    backgroundColor: COLORES.blanco,
-    borderWidth: 1,
-    borderColor: COLORES.borde,
-    borderRadius: 23,
-    padding: 23,
-    marginTop: 20,
-  },
-  iconoSinLectura: {
-    width: 52,
-    height: 52,
-    borderRadius: 18,
-    backgroundColor: '#E5F5FC',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 15,
-  },
-  iconoSinLecturaTexto: {
-    color: COLORES.azul,
-    fontSize: 25,
-    fontWeight: '900',
-  },
-  tituloTarjeta: {
-    color: COLORES.azulOscuro,
-    fontSize: 18,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  textoSinLectura: {
-    ...typography.body,
-    color: COLORES.secundario,
-    textAlign: 'center',
-    lineHeight: 22,
-    marginTop: 9,
-  },
-  botonPrincipal: {
-    minHeight: 54,
-    marginTop: 23,
-    paddingHorizontal: 18,
-    borderRadius: 17,
-    backgroundColor: COLORES.azul,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-    shadowColor: COLORES.azulOscuro,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  botonPresionado: {
-    backgroundColor: COLORES.azulPresionado,
-  },
-  textoBotonPrincipal: {
-    ...typography.label,
-    color: COLORES.blanco,
-    textAlign: 'center',
-    flexShrink: 1,
-    fontSize: 14,
-  },
-  flechaBoton: {
-    color: COLORES.blanco,
-    fontSize: 20,
-    fontWeight: '700',
-  },
-  estadoConexion: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    gap: 8,
-    marginTop: 15,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: COLORES.naranjaFondo,
-  },
-  puntoSinConexion: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-    backgroundColor: COLORES.naranja,
-  },
-  textoConexion: {
-    color: COLORES.naranja,
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  botonSecundario: {
-    minHeight: 48,
-    marginTop: 12,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#C9DFEB',
-    backgroundColor: 'rgba(255,255,255,0.72)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 14,
-  },
-  botonSecundarioPresionado: {
-    backgroundColor: '#DCEEF6',
-  },
-  textoBotonSecundario: {
-    color: COLORES.azulOscuro,
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  pie: {
-    ...typography.caption,
-    color: '#7890A3',
-    textAlign: 'center',
-    marginTop: 23,
-    marginBottom: 8,
-  },
-  pantallaCarga: {
-    flex: 1,
-    backgroundColor: COLORES.fondo,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 28,
-  },
-  iconoCarga: {
-    width: 62,
-    height: 62,
-    borderRadius: 21,
-    backgroundColor: COLORES.azulOscuro,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 18,
-  },
-  iconoCargaTexto: {
-    color: COLORES.celeste,
-    fontSize: 22,
-    fontWeight: '900',
-  },
-  tituloCarga: {
-    color: COLORES.azulOscuro,
-    fontSize: 22,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  descripcionCarga: {
-    ...typography.body,
-    color: COLORES.secundario,
-    textAlign: 'center',
-    lineHeight: 22,
-    marginTop: 8,
-    marginBottom: 20,
-  },
-});
-

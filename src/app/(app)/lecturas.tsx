@@ -4,7 +4,6 @@ import {
   Pressable,
   RefreshControl,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   View,
@@ -13,9 +12,67 @@ import { useFocusEffect } from 'expo-router';
 
 import { obtenerTodasLasLecturas } from '../../data/repositories/lecturasRepository';
 import type { LecturaLocal } from '../../domain/tipos';
-import { colors } from '../../theme/colors';
-import { spacing } from '../../theme/spacing';
-import { typography } from '../../theme/typography';
+const clasesDinamicas: Record<string, Record<string, string>> = {
+  backgroundColor: {
+    "#087FC4": "bg-[#087FC4]",
+    "#DDF4FF": "bg-[#DDF4FF]",
+    "#B8E8FA": "bg-[#B8E8FA]",
+    "#087F62": "bg-[#087F62]",
+    "#D9F7E9": "bg-[#D9F7E9]",
+    "#B5EBD3": "bg-[#B5EBD3]",
+    "#A96500": "bg-[#A96500]",
+    "#FFF0C8": "bg-[#FFF0C8]",
+    "#F5DDA0": "bg-[#F5DDA0]",
+    "#C7354F": "bg-[#C7354F]",
+    "#FFE0E5": "bg-[#FFE0E5]",
+    "#F5C0CA": "bg-[#F5C0CA]",
+    "#FFFFFF": "bg-blanco",
+    "#20B9C6": "bg-[#20B9C6]",
+    "#69879A": "bg-[#69879A]",
+    "#0875A7": "bg-[#0875A7]",
+    "#D1F1FF": "bg-[#D1F1FF]",
+  },
+  color: {
+    "#087FC4": "text-[#087FC4]",
+    "#DDF4FF": "text-[#DDF4FF]",
+    "#B8E8FA": "text-[#B8E8FA]",
+    "#087F62": "text-[#087F62]",
+    "#D9F7E9": "text-[#D9F7E9]",
+    "#B5EBD3": "text-[#B5EBD3]",
+    "#A96500": "text-[#A96500]",
+    "#FFF0C8": "text-[#FFF0C8]",
+    "#F5DDA0": "text-[#F5DDA0]",
+    "#C7354F": "text-[#C7354F]",
+    "#FFE0E5": "text-[#FFE0E5]",
+    "#F5C0CA": "text-[#F5C0CA]",
+    "#FFFFFF": "text-blanco",
+    "#20B9C6": "text-[#20B9C6]",
+    "#69879A": "text-[#69879A]",
+    "#0875A7": "text-[#0875A7]",
+    "#D1F1FF": "text-[#D1F1FF]",
+  },
+  borderColor: {
+    "#087FC4": "border-[#087FC4]",
+    "#DDF4FF": "border-[#DDF4FF]",
+    "#B8E8FA": "border-[#B8E8FA]",
+    "#087F62": "border-[#087F62]",
+    "#D9F7E9": "border-[#D9F7E9]",
+    "#B5EBD3": "border-[#B5EBD3]",
+    "#A96500": "border-[#A96500]",
+    "#FFF0C8": "border-[#FFF0C8]",
+    "#F5DDA0": "border-[#F5DDA0]",
+    "#C7354F": "border-[#C7354F]",
+    "#FFE0E5": "border-[#FFE0E5]",
+    "#F5C0CA": "border-[#F5C0CA]",
+    "#FFFFFF": "border-blanco",
+    "#20B9C6": "border-[#20B9C6]",
+    "#69879A": "border-[#69879A]",
+    "#0875A7": "border-[#0875A7]",
+    "#D1F1FF": "border-[#D1F1FF]",
+  },
+};
+
+
 
 type Filtro = 'todas' | 'pendiente' | 'enviando' | 'enviada' | 'error';
 type Tono = 'azul' | 'verde' | 'ambar' | 'rojo';
@@ -148,9 +205,9 @@ export default function LecturasScreen() {
   }
 
   return (
-    <View style={styles.pantalla}>
+    <View className={"flex-1 bg-[#EAF4F8]"}>
       <ScrollView
-        contentContainerStyle={styles.contenido}
+        contentContainerClassName={"pb-[48px]"}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -162,32 +219,32 @@ export default function LecturasScreen() {
         }
       >
         {/* Encabezado con capas translúcidas */}
-        <View style={styles.encabezado}>
-          <View pointerEvents="none" style={styles.orbeUno} />
-          <View pointerEvents="none" style={styles.orbeDos} />
+        <View className={"bg-[#062B52] px-[16px] pt-[36px] pb-[36px] rounded-bl-[30px] rounded-br-[30px] overflow-hidden"}>
+          <View pointerEvents="none" className={"absolute -top-[95px] -right-[60px] w-[250px] h-[250px] rounded-[125px] bg-[rgba(34,178,224,0.16)] border-[1px] border-[rgba(179,239,255,0.2)]"} />
+          <View pointerEvents="none" className={"absolute -bottom-[110px] -left-[50px] w-[220px] h-[220px] rounded-[110px] bg-[rgba(0,207,190,0.12)] border-[1px] border-[rgba(179,239,255,0.15)]"} />
 
-          <View style={styles.marcaFila}>
-            <View style={styles.marcaIcono}>
-              <Text style={styles.gotaMarca}>◇</Text>
+          <View className={"flex-row items-center gap-[8px] mb-[16px]"}>
+            <View className={"w-[34px] h-[34px] rounded-[12px] items-center justify-center bg-[rgba(255,255,255,0.13)] border-[1px] border-[rgba(255,255,255,0.25)]"}>
+              <Text className={"text-[#8DEBFF] text-[24px] font-[700]"}>◇</Text>
             </View>
-            <Text style={styles.marcaTexto}>LECTURA ÁGIL · EPMAPS</Text>
+            <Text className={"text-[11px] font-[500] leading-[20px] text-[#BDEBFA] tracking-[1.1px]"}>LECTURA ÁGIL · EPMAPS</Text>
           </View>
 
-          <Text style={styles.titulo}>Historial de lecturas</Text>
-          <Text style={styles.subtitulo}>
+          <Text className={"text-[28px] font-[700] leading-[35px] text-blanco mb-[8px]"}>Historial de lecturas</Text>
+          <Text className={"text-[16px] font-[400] leading-[22px] text-[#D5EAF7]"}>
             Controla tus registros, consumos y estados de sincronización.
           </Text>
 
-          <View style={styles.etiquetaLocal}>
-            <View style={styles.puntoVerde} />
-            <Text style={styles.etiquetaLocalTexto}>
+          <View className={"self-start flex-row items-center gap-[4px] mt-[16px] px-[8px] py-[6px] rounded-[99px] bg-[rgba(255,255,255,0.09)] border-[1px] border-[rgba(255,255,255,0.18)]"}>
+            <View className={"w-[7px] h-[7px] rounded-[4px] bg-[#20B990]"} />
+            <Text className={"text-[#DDF8FF] text-[9px] font-[700] tracking-[0.7px]"}>
               REGISTROS DEL DISPOSITIVO
             </Text>
           </View>
         </View>
 
         {/* Indicadores */}
-        <View style={styles.resumenPanel}>
+        <View className={"shadow-[0px_8px_18px_rgba(7,60,104,0.12)] mx-[12px] -mt-[12px] p-[8px] rounded-[25px] flex-row gap-[5px] bg-[rgba(255,255,255,0.76)] border-[1px] border-blanco"}>
           <Resumen
             icono="▤"
             etiqueta="Total"
@@ -221,15 +278,15 @@ export default function LecturasScreen() {
         </View>
 
         {/* Búsqueda y filtros */}
-        <View style={styles.controles}>
-          <View style={styles.busqueda}>
-            <Text style={styles.iconoBusqueda}>⌕</Text>
+        <View className={"shadow-[0px_5px_14px_rgba(12,82,123,0.07)] mx-[12px] mt-[16px] p-[12px] rounded-[24px] bg-[rgba(255,255,255,0.70)] border-[1px] border-blanco"}>
+          <View className={"min-h-[52px] flex-row items-center px-[12px] rounded-[18px] bg-[rgba(255,255,255,0.78)] border-[1px] border-[#C8E3EF]"}>
+            <Text className={"text-[28px] text-[#34799A] mr-[8px]"}>⌕</Text>
             <TextInput
               value={busqueda}
               onChangeText={setBusqueda}
               placeholder="Código de medidor o período..."
               placeholderTextColor="#69879A"
-              style={styles.input}
+              className={"flex-1 text-texto text-[14px] py-[8px]"}
               autoCapitalize="characters"
               accessibilityLabel="Buscar lecturas por medidor o período"
               returnKeyType="search"
@@ -239,9 +296,9 @@ export default function LecturasScreen() {
                 onPress={() => setBusqueda('')}
                 accessibilityRole="button"
                 accessibilityLabel="Limpiar búsqueda"
-                style={styles.limpiar}
+                className={"w-[30px] h-[30px] items-center justify-center rounded-[15px] bg-[#E3F1F7]"}
               >
-                <Text style={styles.limpiarTexto}>×</Text>
+                <Text className={"text-[#245D7A] text-[22px]"}>×</Text>
               </Pressable>
             )}
           </View>
@@ -249,7 +306,7 @@ export default function LecturasScreen() {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.filtros}
+            contentContainerClassName={"gap-[8px] pt-[12px] pb-[2px]"}
           >
             {FILTROS.map((item) => {
               const activo = filtro === item.value;
@@ -260,24 +317,15 @@ export default function LecturasScreen() {
                   onPress={() => setFiltro(item.value)}
                   accessibilityRole="button"
                   accessibilityState={{ selected: activo }}
-                  style={[
-                    styles.filtro,
-                    activo && styles.filtroActivo,
-                  ]}
+                  className={(activo ? "shadow-[0px_4px_8px_rgba(8,127,196,0.2)] min-h-[39px] flex-row items-center gap-[6px] px-[12px] rounded-[99px] bg-[#087FC4] border-[1px] border-[#087FC4]" : "min-h-[39px] flex-row items-center gap-[6px] px-[12px] rounded-[99px] bg-[rgba(255,255,255,0.72)] border-[1px] border-[#D1E6F0]")}
                 >
                   <Text
-                    style={[
-                      styles.filtroIcono,
-                      activo && styles.filtroIconoActivo,
-                    ]}
+                    className={(activo ? "text-blanco text-[15px] font-[700]" : "text-[#47748E] text-[15px] font-[700]")}
                   >
                     {item.icon}
                   </Text>
                   <Text
-                    style={[
-                      styles.filtroTexto,
-                      activo && styles.filtroTextoActivo,
-                    ]}
+                    className={(activo ? "text-blanco text-[12px] font-[600]" : "text-[#345F7A] text-[12px] font-[600]")}
                   >
                     {item.label}
                   </Text>
@@ -288,10 +336,10 @@ export default function LecturasScreen() {
         </View>
 
         {/* Lista */}
-        <View style={styles.seccion}>
+        <View className={"mt-[24px] mb-[12px] mx-[16px] flex-row items-center justify-between"}>
           <View>
-            <Text style={styles.seccionTitulo}>Registros guardados</Text>
-            <Text style={styles.seccionSubtitulo}>
+            <Text className={"text-[19px] font-[600] leading-[26px] text-[#103E66]"}>Registros guardados</Text>
+            <Text className={"text-[12px] font-[400] leading-[24px] text-[#5A788D] mt-[3px]"}>
               {filtradas.length}{' '}
               {filtradas.length === 1
                 ? 'registro encontrado'
@@ -299,50 +347,50 @@ export default function LecturasScreen() {
             </Text>
           </View>
 
-          <View style={styles.contador}>
-            <Text style={styles.contadorTexto}>
+          <View className={"min-w-[42px] h-[36px] px-[8px] items-center justify-center rounded-[13px] bg-[#DDF4FA] border-[1px] border-[#BCE7F3]"}>
+            <Text className={"text-[#0877A5] text-[15px] font-[800]"}>
               {String(filtradas.length).padStart(2, '0')}
             </Text>
           </View>
         </View>
 
         {cargando ? (
-          <View style={styles.estadoPanel}>
+          <View className={"mx-[12px] items-center px-[16px] py-[36px] rounded-[24px] bg-[rgba(255,255,255,0.76)] border-[1px] border-blanco"}>
             <ActivityIndicator size="large" color="#087FC4" />
-            <Text style={styles.estadoTitulo}>Cargando historial</Text>
-            <Text style={styles.estadoTexto}>
+            <Text className={"text-[#103E66] text-[17px] font-[800] text-center"}>Cargando historial</Text>
+            <Text className={"text-[#5A788D] text-[13px] leading-[20px] text-center mt-[8px] max-w-[320px]"}>
               Consultando los registros almacenados en el dispositivo.
             </Text>
           </View>
         ) : error ? (
-          <View style={styles.estadoPanel}>
-            <View style={[styles.estadoIcono, styles.iconoError]}>
-              <Text style={styles.iconoErrorTexto}>!</Text>
+          <View className={"mx-[12px] items-center px-[16px] py-[36px] rounded-[24px] bg-[rgba(255,255,255,0.76)] border-[1px] border-blanco"}>
+            <View className={"w-[58px] h-[58px] rounded-[21px] bg-[#FFE1E6] items-center justify-center mb-[12px]"}>
+              <Text className={"text-[#C7354F] text-[28px] font-[800]"}>!</Text>
             </View>
-            <Text style={styles.estadoTitulo}>No se pudo cargar</Text>
-            <Text style={styles.estadoTexto}>{error}</Text>
+            <Text className={"text-[#103E66] text-[17px] font-[800] text-center"}>No se pudo cargar</Text>
+            <Text className={"text-[#5A788D] text-[13px] leading-[20px] text-center mt-[8px] max-w-[320px]"}>{error}</Text>
             <Pressable
               onPress={() => {
                 setCargando(true);
                 void cargarLecturas().finally(() => setCargando(false));
               }}
-              style={styles.boton}
+              className={"mt-[12px] px-[16px] py-[8px] rounded-[99px] bg-[#087FC4]"}
               accessibilityRole="button"
             >
-              <Text style={styles.botonTexto}>Intentar de nuevo</Text>
+              <Text className={"text-blanco text-[13px] font-[700]"}>Intentar de nuevo</Text>
             </Pressable>
           </View>
         ) : filtradas.length === 0 ? (
-          <View style={styles.estadoPanel}>
-            <View style={styles.estadoIcono}>
-              <Text style={styles.gotaVacia}>◇</Text>
+          <View className={"mx-[12px] items-center px-[16px] py-[36px] rounded-[24px] bg-[rgba(255,255,255,0.76)] border-[1px] border-blanco"}>
+            <View className={"w-[58px] h-[58px] rounded-[21px] bg-[#DDF5FC] items-center justify-center mb-[12px]"}>
+              <Text className={"text-[#087FC4] text-[35px] font-[700]"}>◇</Text>
             </View>
-            <Text style={styles.estadoTitulo}>
+            <Text className={"text-[#103E66] text-[17px] font-[800] text-center"}>
               {lecturas.length === 0
                 ? 'Todavía no hay lecturas'
                 : 'No hay coincidencias'}
             </Text>
-            <Text style={styles.estadoTexto}>
+            <Text className={"text-[#5A788D] text-[13px] leading-[20px] text-center mt-[8px] max-w-[320px]"}>
               {lecturas.length === 0
                 ? 'Cuando registres una lectura, aparecerá aquí con su estado de sincronización.'
                 : 'Prueba con otro código, período o filtro.'}
@@ -353,15 +401,15 @@ export default function LecturasScreen() {
                   setBusqueda('');
                   setFiltro('todas');
                 }}
-                style={styles.boton}
+                className={"mt-[12px] px-[16px] py-[8px] rounded-[99px] bg-[#087FC4]"}
                 accessibilityRole="button"
               >
-                <Text style={styles.botonTexto}>Limpiar filtros</Text>
+                <Text className={"text-blanco text-[13px] font-[700]"}>Limpiar filtros</Text>
               </Pressable>
             )}
           </View>
         ) : (
-          <View style={styles.lista}>
+          <View className={"px-[12px] gap-[12px]"}>
             {filtradas.map((lectura) => (
               <TarjetaLectura
                 key={lectura.claveUnica}
@@ -371,17 +419,17 @@ export default function LecturasScreen() {
           </View>
         )}
 
-        <View style={styles.pie}>
-          <View style={styles.pieIcono}>
-            <Text style={styles.pieIconoTexto}>↻</Text>
+        <View className={"mt-[16px] mx-[12px] p-[12px] rounded-[18px] flex-row items-center gap-[8px] bg-[rgba(222,244,251,0.76)] border-[1px] border-blanco"}>
+          <View className={"w-[34px] h-[34px] rounded-[12px] items-center justify-center bg-blanco"}>
+            <Text className={"text-[#087FC4] text-[23px] font-[700]"}>↻</Text>
           </View>
-          <View style={styles.pieContenido}>
-            <Text style={styles.pieTitulo}>Historial local</Text>
-            <Text style={styles.pieTexto}>
+          <View className={"flex-1"}>
+            <Text className={"text-[#16496D] text-[12px] font-[800]"}>Historial local</Text>
+            <Text className={"text-[#5A788D] text-[11px] mt-[3px]"}>
               Desliza hacia abajo para actualizar la lista.
             </Text>
           </View>
-          <View style={styles.puntoVerde} />
+          <View className={"w-[7px] h-[7px] rounded-[4px] bg-[#20B990]"} />
         </View>
       </ScrollView>
     </View>
@@ -405,12 +453,12 @@ function Resumen({
     tono === 'total' ? '#D1F1FF' : TONOS[tono].fondo;
 
   return (
-    <View style={[styles.resumenItem, tono === 'total' && styles.resumenTotal]}>
-      <View style={[styles.resumenIcono, { backgroundColor: fondo }]}>
-        <Text style={[styles.resumenIconoTexto, { color }]}>{icono}</Text>
+    <View className={(tono === 'total' ? "flex-1 min-w-[0px] items-start px-[5px] py-[8px] rounded-[16px] bg-[#EAF8FF] border-[1px] border-[#B5E8F7]" : "flex-1 min-w-[0px] items-start px-[5px] py-[8px] rounded-[16px] bg-[rgba(255,255,255,0.52)] border-[1px] border-[rgba(255,255,255,0.8)]")}>
+      <View className={["w-[28px] h-[28px] rounded-[14px] items-center justify-center mb-[8px]", clasesDinamicas.backgroundColor[fondo]].filter(Boolean).join(' ')}>
+        <Text className={["text-[16px] font-[800]", clasesDinamicas.color[color]].filter(Boolean).join(' ')}>{icono}</Text>
       </View>
-      <Text style={styles.resumenEtiqueta}>{etiqueta}</Text>
-      <Text style={[styles.resumenValor, { color }]}>{valor}</Text>
+      <Text className={"text-[10px] leading-[13px] text-[#45627A] font-[600] min-h-[26px]"}>{etiqueta}</Text>
+      <Text className={["text-[22px] leading-[27px] font-[800]", clasesDinamicas.color[color]].filter(Boolean).join(' ')}>{valor}</Text>
     </View>
   );
 }
@@ -421,30 +469,24 @@ function TarjetaLectura({ lectura }: { lectura: LecturaLocal }) {
   const requiereAccion = lectura.verificacion === 'requiere_accion';
 
   return (
-    <View style={styles.lecturaCard}>
-      <View style={styles.lecturaCabecera}>
+    <View className={"shadow-[0px_7px_16px_rgba(10,69,106,0.09)] rounded-[24px] p-[12px] bg-[rgba(255,255,255,0.82)] border-[1px] border-blanco overflow-hidden"}>
+      <View className={"flex-row items-center gap-[8px] pb-[12px]"}>
         <View
-          style={[
-            styles.medidorIcono,
-            { backgroundColor: paleta.fondo, borderColor: paleta.borde },
-          ]}
+          className={["w-[49px] h-[49px] rounded-[18px] items-center justify-center relative border-[1px]", [clasesDinamicas.backgroundColor[paleta.fondo], clasesDinamicas.borderColor[paleta.borde]].filter(Boolean).join(' ')].filter(Boolean).join(' ')}
         >
-          <Text style={[styles.medidorGota, { color: paleta.texto }]}>◇</Text>
-          <View style={[styles.medidorPunto, { backgroundColor: paleta.texto }]} />
+          <Text className={["text-[31px] font-[700]", clasesDinamicas.color[paleta.texto]].filter(Boolean).join(' ')}>◇</Text>
+          <View className={["absolute right-[1px] bottom-[1px] w-[10px] h-[10px] rounded-[5px] border-[2px] border-blanco", clasesDinamicas.backgroundColor[paleta.texto]].filter(Boolean).join(' ')} />
         </View>
 
-        <View style={styles.medidorInfo}>
-          <Text style={styles.medidorCodigo}>{lectura.medidorCodigo}</Text>
-          <Text style={styles.periodo}>▦  Período: {lectura.periodo}</Text>
+        <View className={"flex-1 min-w-[0px]"}>
+          <Text className={"text-[#0A355E] text-[15px] font-[800]"}>{lectura.medidorCodigo}</Text>
+          <Text className={"text-[#587990] text-[11px] mt-[5px]"}>▦  Período: {lectura.periodo}</Text>
         </View>
 
         <View
-          style={[
-            styles.estadoBadge,
-            { backgroundColor: paleta.fondo, borderColor: paleta.borde },
-          ]}
+          className={["flex-row items-center gap-[4px] px-[7px] py-[7px] rounded-[99px] border-[1px]", [clasesDinamicas.backgroundColor[paleta.fondo], clasesDinamicas.borderColor[paleta.borde]].filter(Boolean).join(' ')].filter(Boolean).join(' ')}
         >
-          <Text style={[styles.estadoBadgeIcono, { color: paleta.texto }]}>
+          <Text className={["text-[12px] font-[900]", clasesDinamicas.color[paleta.texto]].filter(Boolean).join(' ')}>
             {lectura.syncEstado === 'enviada'
               ? '✓'
               : lectura.syncEstado === 'error'
@@ -453,13 +495,13 @@ function TarjetaLectura({ lectura }: { lectura: LecturaLocal }) {
                   ? '↗'
                   : '◷'}
           </Text>
-          <Text style={[styles.estadoBadgeTexto, { color: paleta.texto }]}>
+          <Text className={["text-[10px] font-[800]", clasesDinamicas.color[paleta.texto]].filter(Boolean).join(' ')}>
             {ESTADOS[lectura.syncEstado]}
           </Text>
         </View>
       </View>
 
-      <View style={styles.datosLectura}>
+      <View className={"flex-row items-stretch pt-[12px] border-t-[1px] border-t-[#DCEBF1] gap-[4px]"}>
         <Dato
           icono="◉"
           etiqueta="Lectura"
@@ -469,7 +511,7 @@ function TarjetaLectura({ lectura }: { lectura: LecturaLocal }) {
               : `${formatearNumero(lectura.lectura)} m³`
           }
         />
-        <View style={styles.divisorDato} />
+        <View className={"w-[1px] bg-[#DCEBF1] my-[2px]"} />
         <Dato
           icono="▥"
           etiqueta="Consumo"
@@ -479,7 +521,7 @@ function TarjetaLectura({ lectura }: { lectura: LecturaLocal }) {
               : `${formatearNumero(lectura.consumo)} m³`
           }
         />
-        <View style={styles.divisorDato} />
+        <View className={"w-[1px] bg-[#DCEBF1] my-[2px]"} />
         <Dato
           icono={requiereAccion ? '!' : '✓'}
           etiqueta="Verificación"
@@ -490,15 +532,12 @@ function TarjetaLectura({ lectura }: { lectura: LecturaLocal }) {
 
       {(lectura.consumoAnomalo || lectura.ultimoError) && (
         <View
-          style={[
-            styles.aviso,
-            lectura.ultimoError ? styles.avisoError : styles.avisoAnomalo,
-          ]}
+          className={(lectura.ultimoError ? "flex-row items-start gap-[8px] mt-[12px] p-[8px] rounded-[12px] bg-[#FFF0F1]" : "flex-row items-start gap-[8px] mt-[12px] p-[8px] rounded-[12px] bg-[#FFF6DF]")}
         >
-          <Text style={styles.avisoIcono}>
+          <Text className={"text-[#A96500] font-[900]"}>
             {lectura.ultimoError ? '!' : '↗'}
           </Text>
-          <Text style={styles.avisoTexto}>
+          <Text className={"flex-1 text-[#80511A] text-[11px] leading-[16px]"}>
             {lectura.ultimoError ||
               'Consumo fuera del rango habitual. Revisa la lectura.'}
           </Text>
@@ -520,454 +559,23 @@ function Dato({
   advertencia?: boolean;
 }) {
   return (
-    <View style={styles.dato}>
+    <View className={"flex-1 min-w-[0px] px-[2px]"}>
       <View
-        style={[
-          styles.datoIcono,
-          advertencia && styles.datoIconoAdvertencia,
-        ]}
+        className={(advertencia ? "w-[28px] h-[28px] rounded-[14px] bg-[#FFF0C8] items-center justify-center mb-[4px]" : "w-[28px] h-[28px] rounded-[14px] bg-[#E0F3FA] items-center justify-center mb-[4px]")}
       >
         <Text
-          style={[
-            styles.datoIconoTexto,
-            advertencia && styles.datoAdvertencia,
-          ]}
+          className={(advertencia ? "text-[#A96500] text-[14px] font-[800]" : "text-[#0877AD] text-[14px] font-[800]")}
         >
           {icono}
         </Text>
       </View>
-      <Text style={styles.datoEtiqueta}>{etiqueta}</Text>
+      <Text className={"text-[#5A788D] text-[10px] mb-[4px]"}>{etiqueta}</Text>
       <Text
         numberOfLines={2}
-        style={[styles.datoValor, advertencia && styles.datoAdvertencia]}
+        className={(advertencia ? "text-[#A96500] text-[11px] leading-[15px] font-[800]" : "text-[#103E66] text-[11px] leading-[15px] font-[800]")}
       >
         {valor}
       </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  pantalla: {
-    flex: 1,
-    backgroundColor: '#EAF4F8',
-  },
-  contenido: {
-    paddingBottom: spacing.xl * 2,
-  },
-
-  // Encabezado azul con orbes translúcidos
-  encabezado: {
-    backgroundColor: '#062B52',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl * 1.5,
-    paddingBottom: spacing.xl * 1.5,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    overflow: 'hidden',
-  },
-  orbeUno: {
-    position: 'absolute',
-    top: -95,
-    right: -60,
-    width: 250,
-    height: 250,
-    borderRadius: 125,
-    backgroundColor: 'rgba(34,178,224,0.16)',
-    borderWidth: 1,
-    borderColor: 'rgba(179,239,255,0.2)',
-  },
-  orbeDos: {
-    position: 'absolute',
-    bottom: -110,
-    left: -50,
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    backgroundColor: 'rgba(0,207,190,0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(179,239,255,0.15)',
-  },
-  marcaFila: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.lg,
-  },
-  marcaIcono: {
-    width: 34,
-    height: 34,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.13)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.25)',
-  },
-  gotaMarca: { color: '#8DEBFF', fontSize: 24, fontWeight: '700' },
-  marcaTexto: {
-    ...typography.label,
-    color: '#BDEBFA',
-    fontSize: 11,
-    letterSpacing: 1.1,
-  },
-  titulo: {
-    ...typography.title,
-    color: '#FFFFFF',
-    fontSize: 28,
-    lineHeight: 35,
-    marginBottom: spacing.sm,
-  },
-  subtitulo: {
-    ...typography.body,
-    color: '#D5EAF7',
-    lineHeight: 22,
-  },
-  etiquetaLocal: {
-    alignSelf: 'flex-start',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    marginTop: spacing.lg,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs + 2,
-    borderRadius: 99,
-    backgroundColor: 'rgba(255,255,255,0.09)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.18)',
-  },
-  puntoVerde: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-    backgroundColor: '#20B990',
-  },
-  etiquetaLocalTexto: {
-    color: '#DDF8FF',
-    fontSize: 9,
-    fontWeight: '700',
-    letterSpacing: 0.7,
-  },
-
-  // Resumen tipo vidrio esmerilado
-  resumenPanel: {
-    marginHorizontal: spacing.md,
-    marginTop: -spacing.md,
-    padding: spacing.sm,
-    borderRadius: 25,
-    flexDirection: 'row',
-    gap: 5,
-    backgroundColor: 'rgba(255,255,255,0.76)',
-    borderWidth: 1,
-    borderColor: '#FFFFFF',
-    shadowColor: '#073C68',
-    shadowOpacity: 0.12,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 5,
-  },
-  resumenItem: {
-    flex: 1,
-    minWidth: 0,
-    alignItems: 'flex-start',
-    paddingHorizontal: 5,
-    paddingVertical: spacing.sm,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.52)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.8)',
-  },
-  resumenTotal: {
-    backgroundColor: '#EAF8FF',
-    borderColor: '#B5E8F7',
-  },
-  resumenIcono: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.sm,
-  },
-  resumenIconoTexto: { fontSize: 16, fontWeight: '800' },
-  resumenEtiqueta: {
-    fontSize: 10,
-    lineHeight: 13,
-    color: '#45627A',
-    fontWeight: '600',
-    minHeight: 26,
-  },
-  resumenValor: { fontSize: 22, lineHeight: 27, fontWeight: '800' },
-
-  // Buscador y filtros
-  controles: {
-    marginHorizontal: spacing.md,
-    marginTop: spacing.lg,
-    padding: spacing.md,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255,255,255,0.70)',
-    borderWidth: 1,
-    borderColor: '#FFFFFF',
-    shadowColor: '#0C527B',
-    shadowOpacity: 0.07,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 5 },
-    elevation: 2,
-  },
-  busqueda: {
-    minHeight: 52,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.78)',
-    borderWidth: 1,
-    borderColor: '#C8E3EF',
-  },
-  iconoBusqueda: {
-    fontSize: 28,
-    color: '#34799A',
-    marginRight: spacing.sm,
-  },
-  input: {
-    flex: 1,
-    color: colors.texto,
-    fontSize: 14,
-    paddingVertical: spacing.sm,
-  },
-  limpiar: {
-    width: 30,
-    height: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 15,
-    backgroundColor: '#E3F1F7',
-  },
-  limpiarTexto: { color: '#245D7A', fontSize: 22 },
-  filtros: { gap: spacing.sm, paddingTop: spacing.md, paddingBottom: 2 },
-  filtro: {
-    minHeight: 39,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: spacing.md,
-    borderRadius: 99,
-    backgroundColor: 'rgba(255,255,255,0.72)',
-    borderWidth: 1,
-    borderColor: '#D1E6F0',
-  },
-  filtroActivo: {
-    backgroundColor: '#087FC4',
-    borderColor: '#087FC4',
-    shadowColor: '#087FC4',
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
-  },
-  filtroIcono: { color: '#47748E', fontSize: 15, fontWeight: '700' },
-  filtroIconoActivo: { color: '#FFFFFF' },
-  filtroTexto: { color: '#345F7A', fontSize: 12, fontWeight: '600' },
-  filtroTextoActivo: { color: '#FFFFFF' },
-
-  // Sección del historial
-  seccion: {
-    marginTop: spacing.xl,
-    marginBottom: spacing.md,
-    marginHorizontal: spacing.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  seccionTitulo: {
-    ...typography.section,
-    color: '#103E66',
-    fontSize: 19,
-  },
-  seccionSubtitulo: {
-    ...typography.body,
-    color: '#5A788D',
-    fontSize: 12,
-    marginTop: 3,
-  },
-  contador: {
-    minWidth: 42,
-    height: 36,
-    paddingHorizontal: spacing.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 13,
-    backgroundColor: '#DDF4FA',
-    borderWidth: 1,
-    borderColor: '#BCE7F3',
-  },
-  contadorTexto: { color: '#0877A5', fontSize: 15, fontWeight: '800' },
-  lista: { paddingHorizontal: spacing.md, gap: spacing.md },
-
-  // Tarjetas de lectura
-  lecturaCard: {
-    borderRadius: 24,
-    padding: spacing.md,
-    backgroundColor: 'rgba(255,255,255,0.82)',
-    borderWidth: 1,
-    borderColor: '#FFFFFF',
-    shadowColor: '#0A456A',
-    shadowOpacity: 0.09,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 7 },
-    elevation: 3,
-    overflow: 'hidden',
-  },
-  lecturaCabecera: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingBottom: spacing.md,
-  },
-  medidorIcono: {
-    width: 49,
-    height: 49,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-    borderWidth: 1,
-  },
-  medidorGota: { fontSize: 31, fontWeight: '700' },
-  medidorPunto: {
-    position: 'absolute',
-    right: 1,
-    bottom: 1,
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
-  },
-  medidorInfo: { flex: 1, minWidth: 0 },
-  medidorCodigo: {
-    color: '#0A355E',
-    fontSize: 15,
-    fontWeight: '800',
-  },
-  periodo: { color: '#587990', fontSize: 11, marginTop: 5 },
-  estadoBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 7,
-    paddingVertical: 7,
-    borderRadius: 99,
-    borderWidth: 1,
-  },
-  estadoBadgeIcono: { fontSize: 12, fontWeight: '900' },
-  estadoBadgeTexto: { fontSize: 10, fontWeight: '800' },
-  datosLectura: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: '#DCEBF1',
-    gap: spacing.xs,
-  },
-  dato: { flex: 1, minWidth: 0, paddingHorizontal: 2 },
-  datoIcono: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#E0F3FA',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.xs,
-  },
-  datoIconoAdvertencia: { backgroundColor: '#FFF0C8' },
-  datoIconoTexto: { color: '#0877AD', fontSize: 14, fontWeight: '800' },
-  datoEtiqueta: { color: '#5A788D', fontSize: 10, marginBottom: 4 },
-  datoValor: { color: '#103E66', fontSize: 11, lineHeight: 15, fontWeight: '800' },
-  datoAdvertencia: { color: '#A96500' },
-  divisorDato: { width: 1, backgroundColor: '#DCEBF1', marginVertical: 2 },
-  aviso: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-    marginTop: spacing.md,
-    padding: spacing.sm,
-    borderRadius: 12,
-  },
-  avisoError: { backgroundColor: '#FFF0F1' },
-  avisoAnomalo: { backgroundColor: '#FFF6DF' },
-  avisoIcono: { color: '#A96500', fontWeight: '900' },
-  avisoTexto: { flex: 1, color: '#80511A', fontSize: 11, lineHeight: 16 },
-
-  // Carga, errores y lista vacía
-  estadoPanel: {
-    marginHorizontal: spacing.md,
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xl * 1.5,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255,255,255,0.76)',
-    borderWidth: 1,
-    borderColor: '#FFFFFF',
-  },
-  estadoIcono: {
-    width: 58,
-    height: 58,
-    borderRadius: 21,
-    backgroundColor: '#DDF5FC',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.md,
-  },
-  iconoError: { backgroundColor: '#FFE1E6' },
-  iconoErrorTexto: { color: '#C7354F', fontSize: 28, fontWeight: '800' },
-  gotaVacia: { color: '#087FC4', fontSize: 35, fontWeight: '700' },
-  estadoTitulo: {
-    color: '#103E66',
-    fontSize: 17,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  estadoTexto: {
-    color: '#5A788D',
-    fontSize: 13,
-    lineHeight: 20,
-    textAlign: 'center',
-    marginTop: spacing.sm,
-    maxWidth: 320,
-  },
-  boton: {
-    marginTop: spacing.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: 99,
-    backgroundColor: '#087FC4',
-  },
-  botonTexto: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
-
-  // Pie de pantalla
-  pie: {
-    marginTop: spacing.lg,
-    marginHorizontal: spacing.md,
-    padding: spacing.md,
-    borderRadius: 18,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: 'rgba(222,244,251,0.76)',
-    borderWidth: 1,
-    borderColor: '#FFFFFF',
-  },
-  pieIcono: {
-    width: 34,
-    height: 34,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-  pieIconoTexto: { color: '#087FC4', fontSize: 23, fontWeight: '700' },
-  pieContenido: { flex: 1 },
-  pieTitulo: { color: '#16496D', fontSize: 12, fontWeight: '800' },
-  pieTexto: { color: '#5A788D', fontSize: 11, marginTop: 3 },
-});

@@ -3,5 +3,13 @@ import { useSesion } from '../contexts/SesionContext';
 
 export default function IndexRoute() {
   const { estado } = useSesion();
-  return <Redirect href={estado === 'autenticado' ? '/inicio' : '/login'} />;
+
+  const destino =
+    estado === 'autenticado'
+      ? '/inicio'
+      : estado === 'sin_verificar'
+        ? '/verificar-correo'
+        : '/login';
+
+  return <Redirect href={destino} />;
 }

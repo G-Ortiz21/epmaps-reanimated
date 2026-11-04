@@ -1,7 +1,7 @@
 # ADR-012: Guardar la sesión del técnico con expo-secure-store
 
 ## Estado
-Aceptado.
+Reemplazado por ADR-016.
 
 ## Fecha
 2026-10-27

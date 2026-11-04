@@ -17,7 +17,8 @@ Cada archivo registra una sola decisión. Un ADR aceptado no se edita: si cambia
 | [009](ADR-009-expo-network-deteccion-de-conexion.md) | Detectar la conexión con expo-network | R9 | `expo-network` |
 | [010](ADR-010-clave-medidor-periodo-como-identidad.md) | Identificar cada lectura con la clave medidor + periodo | R9, R10 | ninguna |
 | [011](ADR-011-envio-con-estados-y-comprobacion-previa.md) | Enviar con estados explícitos y comprobar en el servidor antes de reenviar | R9, R4 | ninguna |
-| [012](ADR-012-secure-store-sesion-del-tecnico.md) | Guardar la sesión con expo-secure-store | R1 | `expo-secure-store` |
+| [012](ADR-012-secure-store-sesion-del-tecnico.md) | Guardar la sesión con expo-secure-store (reemplazado por ADR-016) | R1 | `expo-secure-store` |
 | [013](ADR-013-mockapi-oficina-simulada.md) | Simular el sistema de la oficina con MockAPI | R3, R4, R9 | ninguna |
 | [014](ADR-014-verificar-lectura-antes-de-enviar.md) | Verificar la lectura contra los datos de la oficina antes de enviarla | R4, R6, R7 | ninguna |
 | [015](ADR-015-cache-de-medidores-con-tanstack-query.md) | Persistir la caché de consultas de medidores con TanStack Query y AsyncStorage (reemplaza a 003 en esa caché) | R2, R3, R9 | `@tanstack/react-query`, `@tanstack/react-query-persist-client`, `@tanstack/query-async-storage-persister`, `@react-native-async-storage/async-storage` |
+| [016](ADR-016-firebase-auth-reemplaza-sesion-local.md) | Autenticar con Firebase Authentication (reemplaza a ADR-012) | A1–A10 | `firebase`, `@react-native-async-storage/async-storage` |

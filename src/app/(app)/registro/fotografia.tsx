@@ -1,12 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useRegistro } from '../../../contexts/RegistroContext';
 import { requiereFoto } from '../../../domain/reglasLectura';
@@ -18,24 +11,6 @@ import {
   PermisoCamaraDenegadoError,
   recuperarFotoPendiente,
 } from '../../../services/fotoService';
-
-const COLORES = {
-  fondo: '#EAF4F8',
-  azulOscuro: '#062B52',
-  azul: '#087FC4',
-  azulPresionado: '#075D92',
-  celeste: '#22B2E0',
-  blanco: '#FFFFFF',
-  texto: '#17324D',
-  secundario: '#5A7185',
-  borde: '#D8E7F0',
-  verde: '#087F62',
-  verdeFondo: '#E6F6F0',
-  ambar: '#A96500',
-  ambarFondo: '#FFF4DE',
-  rojo: '#C7354F',
-  rojoFondo: '#FFF0F2',
-};
 
 export default function FotografiaScreen() {
   const { registro, cargandoBorrador, actualizarDatos, definirPaso } =
@@ -92,18 +67,18 @@ export default function FotografiaScreen() {
 
   if (cargandoBorrador) {
     return (
-      <View style={styles.pantalla}>
-        <View style={styles.encabezado}>
-          <Text style={styles.marca}>LECTURA ÁGIL · EPMAPS</Text>
-          <Text style={styles.paso}>PASO 4 DE 5 · FOTOGRAFÍA</Text>
-          <Text style={styles.titulo}>Fotografía</Text>
-          <Text style={styles.descripcion}>
+      <View className={"flex-1 bg-[#EAF4F8]"}>
+        <View className={"bg-[#062B52] rounded-bl-[30px] rounded-br-[30px] overflow-hidden px-[24px] pt-[22px] pb-[27px]"}>
+          <Text className={"text-[#22B2E0] text-[12px] font-[800] tracking-[1.5px]"}>LECTURA ÁGIL · EPMAPS</Text>
+          <Text className={"text-[#B8D8EC] text-[11px] font-[700] tracking-[1.2px] mt-[24px]"}>PASO 4 DE 5 · FOTOGRAFÍA</Text>
+          <Text className={"text-blanco text-[30px] font-[800] -tracking-[0.7px] mt-[7px]"}>Fotografía</Text>
+          <Text className={"text-[#D5EAF7] text-[14px] leading-[21px] mt-[8px] max-w-[320px]"}>
             Recuperando el registro guardado…
           </Text>
         </View>
-        <View style={styles.contenido}>
-          <View style={styles.tarjeta}>
-            <Text style={styles.texto}>Recuperando los datos del registro…</Text>
+        <View className={"p-[20px] pb-[34px] gap-[16px]"}>
+          <View className={"bg-blanco rounded-[22px] p-[18px] gap-[10px] border-[1px] border-[#E1EDF4]"}>
+            <Text className={"text-[#17324D] text-[14px] leading-[21px]"}>Recuperando los datos del registro…</Text>
           </View>
         </View>
       </View>
@@ -112,31 +87,28 @@ export default function FotografiaScreen() {
 
   if (codigoMedidor === null || estado === null) {
     return (
-      <View style={styles.pantalla}>
-        <View style={styles.encabezado}>
-          <Text style={styles.marca}>LECTURA ÁGIL · EPMAPS</Text>
-          <Text style={styles.paso}>PASO 4 DE 5 · FOTOGRAFÍA</Text>
-          <Text style={styles.titulo}>Fotografía</Text>
-          <Text style={styles.descripcion}>
+      <View className={"flex-1 bg-[#EAF4F8]"}>
+        <View className={"bg-[#062B52] rounded-bl-[30px] rounded-br-[30px] overflow-hidden px-[24px] pt-[22px] pb-[27px]"}>
+          <Text className={"text-[#22B2E0] text-[12px] font-[800] tracking-[1.5px]"}>LECTURA ÁGIL · EPMAPS</Text>
+          <Text className={"text-[#B8D8EC] text-[11px] font-[700] tracking-[1.2px] mt-[24px]"}>PASO 4 DE 5 · FOTOGRAFÍA</Text>
+          <Text className={"text-blanco text-[30px] font-[800] -tracking-[0.7px] mt-[7px]"}>Fotografía</Text>
+          <Text className={"text-[#D5EAF7] text-[14px] leading-[21px] mt-[8px] max-w-[320px]"}>
             Completa los pasos anteriores para adjuntar evidencia.
           </Text>
         </View>
 
-        <View style={styles.contenido}>
-          <View style={styles.tarjeta}>
-            <Text style={styles.texto}>
+        <View className={"p-[20px] pb-[34px] gap-[16px]"}>
+          <View className={"bg-blanco rounded-[22px] p-[18px] gap-[10px] border-[1px] border-[#E1EDF4]"}>
+            <Text className={"text-[#17324D] text-[14px] leading-[21px]"}>
               Primero consulta un medidor y completa los datos de lectura.
             </Text>
 
             <Pressable
               accessibilityRole="button"
               onPress={() => router.push('/medidor')}
-              style={({ pressed }) => [
-                styles.boton,
-                pressed && styles.botonPresionado,
-              ]}
+              className={["min-h-[54px] bg-[#087FC4] rounded-[17px] items-center justify-center px-[18px] py-[14px]", "active:bg-[#075D92]"].filter(Boolean).join(' ')}
             >
-              <Text style={styles.botonTexto}>Consultar medidor</Text>
+              <Text className={"text-blanco text-[14px] font-[800] text-center"}>Consultar medidor</Text>
             </Pressable>
           </View>
         </View>
@@ -200,54 +172,46 @@ export default function FotografiaScreen() {
   }
 
   return (
-    <View style={styles.pantalla}>
-      <View style={styles.encabezado}>
-        <View style={styles.orbeSuperior} />
-        <View style={styles.orbeInferior} />
+    <View className={"flex-1 bg-[#EAF4F8]"}>
+      <View className={"bg-[#062B52] rounded-bl-[30px] rounded-br-[30px] overflow-hidden px-[24px] pt-[22px] pb-[27px]"}>
+        <View className={"absolute w-[190px] h-[190px] rounded-[95px] bg-[rgba(34,178,224,0.12)] -top-[95px] -right-[45px]"} />
+        <View className={"absolute w-[130px] h-[130px] rounded-[65px] bg-[rgba(0,207,190,0.10)] -bottom-[75px] left-[90px]"} />
 
-        <Text style={styles.marca}>LECTURA ÁGIL · EPMAPS</Text>
-        <Text style={styles.paso}>PASO 4 DE 5 · EVIDENCIA</Text>
-        <Text style={styles.titulo}>Fotografía</Text>
-        <Text style={styles.descripcion}>
+        <Text className={"text-[#22B2E0] text-[12px] font-[800] tracking-[1.5px]"}>LECTURA ÁGIL · EPMAPS</Text>
+        <Text className={"text-[#B8D8EC] text-[11px] font-[700] tracking-[1.2px] mt-[24px]"}>PASO 4 DE 5 · EVIDENCIA</Text>
+        <Text className={"text-blanco text-[30px] font-[800] -tracking-[0.7px] mt-[7px]"}>Fotografía</Text>
+        <Text className={"text-[#D5EAF7] text-[14px] leading-[21px] mt-[8px] max-w-[320px]"}>
           Adjunta una imagen del medidor como evidencia del registro.
         </Text>
 
-        <View style={styles.progresoContenedor}>
-          <View style={styles.progresoFondo}>
-            <View style={styles.progresoActivo} />
+        <View className={"flex-row items-center gap-[12px] mt-[22px]"}>
+          <View className={"h-[5px] flex-1 bg-[rgba(255,255,255,0.2)] rounded-[5px] overflow-hidden"}>
+            <View className={"w-[80%] h-full bg-[#22B2E0] rounded-[5px]"} />
           </View>
-          <Text style={styles.progresoTexto}>4 de 5 pasos</Text>
+          <Text className={"text-[#D5EAF7] text-[11px] font-[700]"}>4 de 5 pasos</Text>
         </View>
       </View>
 
       <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.contenido}
+        className={"flex-1"}
+        contentContainerClassName={"p-[20px] pb-[34px] gap-[16px]"}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.tarjetaMedidor}>
-          <View style={styles.iconoMedidor}>
-            <Text style={styles.iconoMedidorTexto}>04</Text>
+        <View className={"flex-row items-center bg-blanco rounded-[22px] p-[16px] gap-[12px] border-[1px] border-[#E1EDF4]"}>
+          <View className={"w-[48px] h-[48px] rounded-[16px] items-center justify-center bg-[#E5F5FC]"}>
+            <Text className={"text-[#087FC4] text-[17px] font-[800]"}>04</Text>
           </View>
 
-          <View style={styles.datosMedidor}>
-            <Text style={styles.etiqueta}>CÓDIGO DEL MEDIDOR</Text>
-            <Text style={styles.codigoMedidor}>{codigoMedidor}</Text>
+          <View className={"flex-1 gap-[5px]"}>
+            <Text className={"text-[#5A7185] text-[10px] font-[800] tracking-[1px]"}>CÓDIGO DEL MEDIDOR</Text>
+            <Text className={"text-[#062B52] text-[20px] font-[800]"}>{codigoMedidor}</Text>
           </View>
 
           <View
-            style={[
-              styles.estadoEtiqueta,
-              obligatoria ? styles.estadoObligatorio : styles.estadoOpcional,
-            ]}
+            className={(obligatoria ? "rounded-[12px] px-[10px] py-[7px] bg-[#FFF4DE]" : "rounded-[12px] px-[10px] py-[7px] bg-[#E6F6F0]")}
           >
             <Text
-              style={[
-                styles.estadoEtiquetaTexto,
-                obligatoria
-                  ? styles.textoObligatorio
-                  : styles.textoOpcional,
-              ]}
+              className={(obligatoria ? "text-[11px] font-[800] text-[#A96500]" : "text-[11px] font-[800] text-[#087F62]")}
             >
               {obligatoria ? 'Requerida' : 'Opcional'}
             </Text>
@@ -255,69 +219,60 @@ export default function FotografiaScreen() {
         </View>
 
         <View
-          style={[
-            styles.tarjeta,
-            obligatoria ? styles.tarjetaAdvertencia : styles.tarjetaPositiva,
-          ]}
+          className={(obligatoria ? "bg-blanco rounded-[22px] p-[18px] gap-[10px] border-[1px] border-[#E1EDF4] border-l-[4px] border-l-[#E7A12B]" : "bg-blanco rounded-[22px] p-[18px] gap-[10px] border-[1px] border-[#E1EDF4] border-l-[4px] border-l-[#22A783]")}
         >
-          <View style={styles.encabezadoTarjeta}>
+          <View className={"flex-row items-center gap-[9px]"}>
             <View
-              style={[
-                styles.puntoEstado,
-                obligatoria ? styles.puntoAmbar : styles.puntoVerde,
-              ]}
+              className={(obligatoria ? "w-[9px] h-[9px] rounded-[5px] bg-[#E7A12B]" : "w-[9px] h-[9px] rounded-[5px] bg-[#22A783]")}
             />
             <Text
-              style={[
-                styles.tituloTarjeta,
-                obligatoria ? styles.textoObligatorio : styles.textoOpcional,
-              ]}
+              className={(obligatoria ? "flex-1 text-[14px] font-[800] leading-[20px] text-[#A96500]" : "flex-1 text-[14px] font-[800] leading-[20px] text-[#087F62]")}
             >
               {motivoObligatoria}
             </Text>
           </View>
 
-          <Text style={styles.textoSecundario}>
+          <Text className={"text-[#5A7185] text-[13px] leading-[20px]"}>
             {obligatoria
               ? 'Asegúrate de que la imagen permita identificar el estado del medidor.'
               : 'Puedes adjuntar una fotografía para respaldar la información registrada.'}
           </Text>
         </View>
 
-        <View style={styles.seccion}>
-          <Text style={styles.tituloSeccion}>Evidencia fotográfica</Text>
-          <Text style={styles.subtituloSeccion}>
+        <View className={"gap-[5px] mt-[2px]"}>
+          <Text className={"text-[#062B52] text-[19px] font-[800]"}>Evidencia fotográfica</Text>
+          <Text className={"text-[#5A7185] text-[13px] leading-[19px]"}>
             {datos.fotoNombre !== null
               ? 'Revisa la imagen guardada o vuelve a tomarla.'
               : 'Toma una fotografía directamente desde la cámara del dispositivo.'}
           </Text>
         </View>
 
-        <View style={styles.areaFoto}>
+        <View className={"bg-blanco border-[#D8E7F0] rounded-[24px] border-[1px] p-[12px] overflow-hidden"}>
           {datos.fotoNombre !== null && rutaFoto !== null ? (
             <>
               <Image
                 source={{ uri: rutaFoto }}
-                style={styles.vistaPrevia}
+                className={"w-full h-[270px] rounded-[16px] bg-[#EAF1F5]"}
                 resizeMode="cover"
               />
-              <View style={styles.insigniaFoto}>
-                <Text style={styles.insigniaFotoTexto}>
+              <View className={"self-start mt-[12px] rounded-[10px] bg-[#E6F6F0] px-[12px] py-[8px]"}>
+                <Text className={"text-[#087F62] text-[12px] font-[800]"}>
                   Fotografía adjunta
                 </Text>
               </View>
             </>
           ) : (
-            <View style={styles.contenedorSinFoto}>
-              <View style={styles.iconoCamara}>
-                <Text style={styles.iconoCamaraTexto}>+</Text>
+            <View className={"min-h-[200px] items-center justify-center p-[20px] gap-[12px]"}>
+              <View className={"w-[62px] h-[62px] rounded-[22px] bg-[#E5F5FC] items-center justify-center"}>
+                <Text className={"text-[#087FC4] text-[36px] font-[400] leading-[40px]"}>+</Text>
               </View>
-              <Text style={styles.sinFoto}>
+              <Text className={"text-[#17324D] text-[14px] font-[700] text-center leading-[21px]"}>
                 {datos.fotoNombre !== null
                   ? 'La fotografía guardada ya no está disponible en el dispositivo.'
                   : 'Todavía no hay una fotografía adjunta'}
               </Text>
-              <Text style={styles.ayudaFoto}>
+              <Text className={"text-[#5A7185] text-[12px] text-center leading-[18px]"}>
                 Utiliza el botón inferior para abrir la cámara.
               </Text>
             </View>
@@ -328,13 +283,9 @@ export default function FotografiaScreen() {
           accessibilityRole="button"
           disabled={tomandoFoto}
           onPress={() => void tomar()}
-          style={({ pressed }) => [
-            styles.boton,
-            pressed && styles.botonPresionado,
-            tomandoFoto && styles.botonDeshabilitado,
-          ]}
+          className={[(tomandoFoto ? "min-h-[54px] bg-[#087FC4] rounded-[17px] items-center justify-center px-[18px] py-[14px] opacity-[0.6]" : "min-h-[54px] bg-[#087FC4] rounded-[17px] items-center justify-center px-[18px] py-[14px]"), "active:bg-[#075D92]"].filter(Boolean).join(' ')}
         >
-          <Text style={styles.botonTexto}>
+          <Text className={"text-blanco text-[14px] font-[800] text-center"}>
             {tomandoFoto
               ? 'Abriendo la cámara…'
               : datos.fotoNombre !== null
@@ -344,9 +295,9 @@ export default function FotografiaScreen() {
         </Pressable>
 
         {permisoDenegado && (
-          <View style={styles.aviso}>
-            <Text style={styles.avisoTitulo}>Permiso de cámara denegado</Text>
-            <Text style={styles.avisoTexto}>
+          <View className={"bg-[#FFF4DE] border-[#F0D69F] border-[1px] rounded-[16px] p-[15px] gap-[6px]"}>
+            <Text className={"text-[#A96500] text-[13px] font-[800]"}>Permiso de cámara denegado</Text>
+            <Text className={"text-[#17324D] text-[13px] leading-[19px]"}>
               {obligatoria
                 ? 'Mientras no concedas el permiso, este registro no puede avanzar.'
                 : 'Puedes continuar sin fotografía porque es opcional.'}
@@ -355,8 +306,8 @@ export default function FotografiaScreen() {
         )}
 
         {mensaje !== null && (
-          <View style={styles.errorContenedor}>
-            <Text accessibilityRole="alert" style={styles.error}>
+          <View className={"bg-[#FFF0F2] border-[#F3C5CE] border-[1px] rounded-[15px] p-[14px]"}>
+            <Text accessibilityRole="alert" className={"text-[#C7354F] text-[13px] font-[600] leading-[20px]"}>
               {mensaje}
             </Text>
           </View>
@@ -365,12 +316,9 @@ export default function FotografiaScreen() {
         <Pressable
           accessibilityRole="button"
           onPress={avanzar}
-          style={({ pressed }) => [
-            styles.botonSecundario,
-            pressed && styles.botonSecundarioPresionado,
-          ]}
+          className={["min-h-[54px] bg-blanco border-[#A8D5E9] border-[1px] rounded-[17px] items-center justify-center px-[16px] py-[12px]", "active:bg-[#E5F3FA]"].filter(Boolean).join(' ')}
         >
-          <Text style={styles.botonSecundarioTexto}>
+          <Text className={"text-[#062B52] text-[14px] font-[800] text-center"}>
             {obligatoria && datos.fotoNombre === null
               ? 'Se requiere la fotografía para continuar'
               : 'Siguiente: resumen'}
@@ -380,381 +328,17 @@ export default function FotografiaScreen() {
         <Pressable
           accessibilityRole="button"
           onPress={() => router.push('/registro/revision_consumo')}
-          style={styles.botonVolver}
+          className={"items-center justify-center p-[12px]"}
         >
-          <Text style={styles.botonVolverTexto}>
+          <Text className={"text-[#5A7185] text-[13px] font-[700]"}>
             ← Volver a revisión del consumo
           </Text>
         </Pressable>
 
-        <Text style={styles.notaPie}>
+        <Text className={"text-[#5A7185] text-[11px] leading-[17px] text-center mt-[2px]"}>
           Verifica la evidencia antes de continuar con el resumen del registro.
         </Text>
       </ScrollView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  pantalla: {
-    flex: 1,
-    backgroundColor: COLORES.fondo,
-  },
-  encabezado: {
-    backgroundColor: COLORES.azulOscuro,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    overflow: 'hidden',
-    paddingHorizontal: 24,
-    paddingTop: 22,
-    paddingBottom: 27,
-  },
-  orbeSuperior: {
-    position: 'absolute',
-    width: 190,
-    height: 190,
-    borderRadius: 95,
-    backgroundColor: 'rgba(34,178,224,0.12)',
-    top: -95,
-    right: -45,
-  },
-  orbeInferior: {
-    position: 'absolute',
-    width: 130,
-    height: 130,
-    borderRadius: 65,
-    backgroundColor: 'rgba(0,207,190,0.10)',
-    bottom: -75,
-    left: 90,
-  },
-  marca: {
-    color: COLORES.celeste,
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 1.5,
-  },
-  paso: {
-    color: '#B8D8EC',
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1.2,
-    marginTop: 24,
-  },
-  titulo: {
-    color: COLORES.blanco,
-    fontSize: 30,
-    fontWeight: '800',
-    letterSpacing: -0.7,
-    marginTop: 7,
-  },
-  descripcion: {
-    color: '#D5EAF7',
-    fontSize: 14,
-    lineHeight: 21,
-    marginTop: 8,
-    maxWidth: 320,
-  },
-  progresoContenedor: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginTop: 22,
-  },
-  progresoFondo: {
-    height: 5,
-    flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 5,
-    overflow: 'hidden',
-  },
-  progresoActivo: {
-    width: '80%',
-    height: '100%',
-    backgroundColor: COLORES.celeste,
-    borderRadius: 5,
-  },
-  progresoTexto: {
-    color: '#D5EAF7',
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  scroll: {
-    flex: 1,
-  },
-  contenido: {
-    padding: 20,
-    paddingBottom: 34,
-    gap: 16,
-  },
-  tarjetaMedidor: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORES.blanco,
-    borderRadius: 22,
-    padding: 16,
-    gap: 12,
-    borderWidth: 1,
-    borderColor: '#E1EDF4',
-  },
-  iconoMedidor: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#E5F5FC',
-  },
-  iconoMedidorTexto: {
-    color: COLORES.azul,
-    fontSize: 17,
-    fontWeight: '800',
-  },
-  datosMedidor: {
-    flex: 1,
-    gap: 5,
-  },
-  etiqueta: {
-    color: COLORES.secundario,
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 1,
-  },
-  codigoMedidor: {
-    color: COLORES.azulOscuro,
-    fontSize: 20,
-    fontWeight: '800',
-  },
-  estadoEtiqueta: {
-    borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-  },
-  estadoObligatorio: {
-    backgroundColor: COLORES.ambarFondo,
-  },
-  estadoOpcional: {
-    backgroundColor: COLORES.verdeFondo,
-  },
-  estadoEtiquetaTexto: {
-    fontSize: 11,
-    fontWeight: '800',
-  },
-  textoObligatorio: {
-    color: COLORES.ambar,
-  },
-  textoOpcional: {
-    color: COLORES.verde,
-  },
-  tarjeta: {
-    backgroundColor: COLORES.blanco,
-    borderRadius: 22,
-    padding: 18,
-    gap: 10,
-    borderWidth: 1,
-    borderColor: '#E1EDF4',
-  },
-  tarjetaAdvertencia: {
-    borderLeftWidth: 4,
-    borderLeftColor: '#E7A12B',
-  },
-  tarjetaPositiva: {
-    borderLeftWidth: 4,
-    borderLeftColor: '#22A783',
-  },
-  encabezadoTarjeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 9,
-  },
-  puntoEstado: {
-    width: 9,
-    height: 9,
-    borderRadius: 5,
-  },
-  puntoAmbar: {
-    backgroundColor: '#E7A12B',
-  },
-  puntoVerde: {
-    backgroundColor: '#22A783',
-  },
-  tituloTarjeta: {
-    flex: 1,
-    fontSize: 14,
-    fontWeight: '800',
-    lineHeight: 20,
-  },
-  textoSecundario: {
-    color: COLORES.secundario,
-    fontSize: 13,
-    lineHeight: 20,
-  },
-  seccion: {
-    gap: 5,
-    marginTop: 2,
-  },
-  tituloSeccion: {
-    color: COLORES.azulOscuro,
-    fontSize: 19,
-    fontWeight: '800',
-  },
-  subtituloSeccion: {
-    color: COLORES.secundario,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  areaFoto: {
-    backgroundColor: COLORES.blanco,
-    borderColor: COLORES.borde,
-    borderRadius: 24,
-    borderWidth: 1,
-    padding: 12,
-    overflow: 'hidden',
-  },
-  vistaPrevia: {
-    width: '100%',
-    height: 270,
-    borderRadius: 16,
-    backgroundColor: '#EAF1F5',
-  },
-  insigniaFoto: {
-    alignSelf: 'flex-start',
-    marginTop: 12,
-    borderRadius: 10,
-    backgroundColor: COLORES.verdeFondo,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  insigniaFotoTexto: {
-    color: COLORES.verde,
-    fontSize: 12,
-    fontWeight: '800',
-  },
-  contenedorSinFoto: {
-    minHeight: 200,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-    gap: 12,
-  },
-  iconoCamara: {
-    width: 62,
-    height: 62,
-    borderRadius: 22,
-    backgroundColor: '#E5F5FC',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconoCamaraTexto: {
-    color: COLORES.azul,
-    fontSize: 36,
-    fontWeight: '400',
-    lineHeight: 40,
-  },
-  sinFoto: {
-    color: COLORES.texto,
-    fontSize: 14,
-    fontWeight: '700',
-    textAlign: 'center',
-    lineHeight: 21,
-  },
-  ayudaFoto: {
-    color: COLORES.secundario,
-    fontSize: 12,
-    textAlign: 'center',
-    lineHeight: 18,
-  },
-  boton: {
-    minHeight: 54,
-    backgroundColor: COLORES.azul,
-    borderRadius: 17,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 18,
-    paddingVertical: 14,
-  },
-  botonPresionado: {
-    backgroundColor: COLORES.azulPresionado,
-  },
-  botonDeshabilitado: {
-    opacity: 0.6,
-  },
-  botonTexto: {
-    color: COLORES.blanco,
-    fontSize: 14,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  botonSecundario: {
-    minHeight: 54,
-    backgroundColor: COLORES.blanco,
-    borderColor: '#A8D5E9',
-    borderWidth: 1,
-    borderRadius: 17,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  botonSecundarioPresionado: {
-    backgroundColor: '#E5F3FA',
-  },
-  botonSecundarioTexto: {
-    color: COLORES.azulOscuro,
-    fontSize: 14,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  aviso: {
-    backgroundColor: COLORES.ambarFondo,
-    borderColor: '#F0D69F',
-    borderWidth: 1,
-    borderRadius: 16,
-    padding: 15,
-    gap: 6,
-  },
-  avisoTitulo: {
-    color: COLORES.ambar,
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  avisoTexto: {
-    color: COLORES.texto,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  errorContenedor: {
-    backgroundColor: COLORES.rojoFondo,
-    borderColor: '#F3C5CE',
-    borderWidth: 1,
-    borderRadius: 15,
-    padding: 14,
-  },
-  error: {
-    color: COLORES.rojo,
-    fontSize: 13,
-    fontWeight: '600',
-    lineHeight: 20,
-  },
-  botonVolver: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 12,
-  },
-  botonVolverTexto: {
-    color: COLORES.secundario,
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  notaPie: {
-    color: COLORES.secundario,
-    fontSize: 11,
-    lineHeight: 17,
-    textAlign: 'center',
-    marginTop: 2,
-  },
-  texto: {
-  color: COLORES.texto,
-  fontSize: 14,
-  lineHeight: 21,
-},
-});

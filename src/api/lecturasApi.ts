@@ -1,6 +1,7 @@
 
-import { API_BASE_URL, API_RESOURCES } from '../config';
+import { API_RESOURCES } from '../config';
 import type { LecturaLocal } from '../domain/tipos';
+import { ApiError, getJson, postJson } from './client';
 
 export interface LecturaRemota {
   id: string;
@@ -9,72 +10,58 @@ export interface LecturaRemota {
   periodo: string;
 }
 
-function obtenerUrl(): string {
-  return `${API_BASE_URL.replace(/\/+$/, '')}/${API_RESOURCES.lecturas}`;
-}
-
-async function solicitar<T>(
-  url: string,
-  init?: RequestInit,
-): Promise<T> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10000);
-
-  try {
-    let response: Response;
-
-    try {
-      response = await fetch(url, {
-        ...init,
-        signal: controller.signal,
-        headers: {
-          Accept: 'application/json',
-          ...(init?.body
-            ? { 'Content-Type': 'application/json' }
-            : {}),
-          ...init?.headers,
-        },
-      });
-    } catch (error: unknown) {
-      if (error instanceof Error && error.name === 'AbortError') {
-        throw new Error('La solicitud a MockAPI excedió 10 segundos.');
-      }
-
-      throw new Error('No se pudo conectar con MockAPI.');
-    }
-
-    if (!response.ok) {
-      throw new Error(`MockAPI respondió con HTTP ${response.status}.`);
-    }
-
-    try {
-      return (await response.json()) as T;
-    } catch {
-      throw new Error('MockAPI devolvió una respuesta JSON inválida.');
-    }
-  } finally {
-    clearTimeout(timeout);
+function parsearLecturaRemota(valor: unknown): LecturaRemota {
+  if (typeof valor !== 'object' || valor === null || Array.isArray(valor)) {
+    throw new ApiError(
+      'invalid_response',
+      'La respuesta de lecturas contiene un registro malformado.',
+    );
   }
+
+  const registro = valor as Record<string, unknown>;
+  const id =
+    typeof registro.id === 'string' || typeof registro.id === 'number'
+      ? String(registro.id)
+      : '';
+
+  if (
+    id.length === 0 ||
+    typeof registro.claveUnica !== 'string' ||
+    typeof registro.medidorCodigo !== 'string' ||
+    typeof registro.periodo !== 'string'
+  ) {
+    throw new ApiError(
+      'invalid_response',
+      'La respuesta de lecturas no cumple el contrato esperado.',
+    );
+  }
+
+  return {
+    id,
+    claveUnica: registro.claveUnica,
+    medidorCodigo: registro.medidorCodigo,
+    periodo: registro.periodo,
+  };
 }
 
 export async function buscarLecturaRemotaPorClave(
   claveUnica: string,
 ): Promise<LecturaRemota | null> {
-  const url = new URL(obtenerUrl());
-  url.searchParams.set('claveUnica', claveUnica);
-
-  const resultado = await solicitar<LecturaRemota[]>(url.toString());
+  const resultado = await getJson(API_RESOURCES.lecturas, { claveUnica });
 
   if (!Array.isArray(resultado)) {
-    throw new Error('MockAPI no devolvió una lista válida de lecturas.');
+    throw new ApiError(
+      'invalid_response',
+      'La oficina no devolvió una lista válida de lecturas.',
+    );
   }
 
-  const coincidencias = resultado.filter(
-    (item) => item.claveUnica === claveUnica,
-  );
+  const lecturas = resultado.map(parsearLecturaRemota);
+  const coincidencias = lecturas.filter((item) => item.claveUnica === claveUnica);
 
   if (coincidencias.length > 1) {
-    throw new Error(
+    throw new ApiError(
+      'invalid_response',
       `Hay varias lecturas remotas con la clave ${claveUnica}.`,
     );
   }
@@ -104,19 +91,16 @@ export async function crearLecturaRemota(
     creadoEn: lectura.creadoEn,
   };
 
-  const creada = await solicitar<LecturaRemota>(obtenerUrl(), {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  });
+  const creada = parsearLecturaRemota(
+    await postJson(API_RESOURCES.lecturas, payload),
+  );
 
-  if (
-    !creada ||
-    creada.id == null ||
-    String(creada.id).length === 0 ||
-    creada.claveUnica !== lectura.claveUnica
-  ) {
-    throw new Error('MockAPI no confirmó correctamente la lectura creada.');
+  if (creada.claveUnica !== lectura.claveUnica) {
+    throw new ApiError(
+      'invalid_response',
+      'La oficina no confirmó correctamente la lectura creada.',
+    );
   }
 
-  return { ...creada, id: String(creada.id) };
+  return creada;
 }

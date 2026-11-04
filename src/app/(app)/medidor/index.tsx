@@ -1,21 +1,13 @@
 
 import { useState } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 
 import { mensajeErrorMedidor } from '../../../components/medidoresUi';
 import { useConexion } from '../../../contexts/ConexionContext';
 import { validarCodigoMedidor } from '../../../domain/validaciones';
-import { spacing } from '../../../theme/spacing';
-import { typography } from '../../../theme/typography';
+
+
 import { useMedidorQuery } from '../../../hooks/useMedidorQuery';
 
 export default function MedidorSearchScreen() {
@@ -88,62 +80,56 @@ export default function MedidorSearchScreen() {
   }
 
   return (
-    <View style={styles.pantalla}>
+    <View className={"flex-1 bg-[#EAF4F8]"}>
       <ScrollView
-        contentContainerStyle={styles.contenido}
+        contentContainerClassName={"pb-[48px]"}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         {/* Encabezado */}
-        <View style={styles.encabezado}>
-          <View pointerEvents="none" style={styles.orbeUno} />
-          <View pointerEvents="none" style={styles.orbeDos} />
+        <View className={"bg-[#062B52] px-[16px] pt-[16px] pb-[36px] rounded-bl-[32px] rounded-br-[32px] overflow-hidden"}>
+          <View pointerEvents="none" className={"absolute -top-[90px] -right-[70px] w-[240px] h-[240px] rounded-[120px] bg-[rgba(34,178,224,0.16)] border-[1px] border-[rgba(179,239,255,0.2)]"} />
+          <View pointerEvents="none" className={"absolute -bottom-[100px] -left-[70px] w-[200px] h-[200px] rounded-[100px] bg-[rgba(0,207,190,0.12)] border-[1px] border-[rgba(179,239,255,0.16)]"} />
 
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Volver al inicio"
             onPress={() => router.replace('/inicio')}
-            style={({ pressed }) => [
-              styles.botonVolver,
-              pressed && styles.presionado,
-            ]}
+            className={["self-start flex-row items-center gap-[4px] px-[8px] py-[4px] mb-[16px] rounded-[99px] bg-[rgba(255,255,255,0.10)] border-[1px] border-[rgba(255,255,255,0.2)]", "active:opacity-[0.8]"].filter(Boolean).join(' ')}
           >
-            <Text style={styles.flechaVolver}>←</Text>
-            <Text style={styles.textoVolver}>Inicio</Text>
+            <Text className={"text-blanco text-[20px]"}>←</Text>
+            <Text className={"text-[#E0F6FF] text-[12px] font-[700]"}>Inicio</Text>
           </Pressable>
 
-          <View style={styles.marcaFila}>
-            <View style={styles.marcaIcono}>
-              <Text style={styles.gotaMarca}>◇</Text>
+          <View className={"flex-row items-center gap-[8px] mb-[16px]"}>
+            <View className={"w-[34px] h-[34px] rounded-[12px] items-center justify-center bg-[rgba(255,255,255,0.13)] border-[1px] border-[rgba(255,255,255,0.25)]"}>
+              <Text className={"text-[#8DEBFF] text-[24px] font-[700]"}>◇</Text>
             </View>
-            <Text style={styles.marcaTexto}>LECTURA ÁGIL · EPMAPS</Text>
+            <Text className={"text-[10px] font-[500] leading-[20px] text-[#BDEBFA] tracking-[1px]"}>LECTURA ÁGIL · EPMAPS</Text>
           </View>
 
-          <View style={styles.tituloFila}>
-            <View style={styles.tituloContenido}>
-              <Text style={styles.kicker}>GESTIÓN DE SUMINISTROS</Text>
-              <Text style={styles.titulo}>Consulta de</Text>
-              <Text style={styles.tituloAcento}>medidor.</Text>
+          <View className={"flex-row items-center gap-[8px]"}>
+            <View className={"flex-1"}>
+              <Text className={"text-[#7EE6E8] text-[9px] font-[800] tracking-[1.4px] mb-[8px]"}>GESTIÓN DE SUMINISTROS</Text>
+              <Text className={"text-[29px] font-[700] leading-[35px] text-blanco"}>Consulta de</Text>
+              <Text className={"text-[#65DCE5] text-[30px] leading-[36px] font-[800]"}>medidor.</Text>
             </View>
 
-            <View style={styles.iconoAgua}>
-              <Text style={styles.iconoAguaTexto}>◇</Text>
+            <View className={"w-[72px] h-[82px] rounded-[25px] items-center justify-center bg-[rgba(255,255,255,0.10)] border-[1px] border-[rgba(180,240,255,0.35)]"}>
+              <Text className={"text-[#9BEFFF] text-[55px] font-[300]"}>◇</Text>
             </View>
           </View>
 
-          <Text style={styles.subtitulo}>
+          <Text className={"text-[12px] font-[400] leading-[20px] text-[#D5EAF7] mt-[12px]"}>
             Identifica el suministro para consultar su información y continuar
             con el proceso de lectura.
           </Text>
 
-          <View style={styles.estadoConexion}>
+          <View className={"self-start flex-row items-center gap-[8px] mt-[16px] px-[12px] py-[8px] rounded-[99px] bg-[rgba(255,255,255,0.09)] border-[1px] border-[rgba(255,255,255,0.17)]"}>
             <View
-              style={[
-                styles.puntoConexion,
-                enLinea ? styles.puntoDisponible : styles.puntoDesconectado,
-              ]}
+              className={(enLinea ? "w-[8px] h-[8px] rounded-[4px] bg-[#51E1AF]" : "w-[8px] h-[8px] rounded-[4px] bg-[#FFC45C]")}
             />
-            <Text style={styles.estadoConexionTexto}>
+            <Text className={"text-[#E0F6FF] text-[11px] font-[600]"}>
               {enLinea
                 ? 'Conectividad de red disponible'
                 : 'Modo sin conexión'}
@@ -152,29 +138,26 @@ export default function MedidorSearchScreen() {
         </View>
 
         {/* Formulario de búsqueda */}
-        <View style={styles.formulario}>
-          <View style={styles.formularioEncabezado}>
-            <View style={styles.numeroPaso}>
-              <Text style={styles.numeroPasoTexto}>01</Text>
+        <View className={"shadow-[0px_8px_18px_rgba(10,69,106,0.12)] mx-[12px] -mt-[12px] p-[16px] rounded-[26px] bg-[rgba(255,255,255,0.84)] border-[1px] border-blanco"}>
+          <View className={"flex-row items-center gap-[12px] mb-[24px]"}>
+            <View className={"w-[43px] h-[43px] rounded-[15px] items-center justify-center bg-[#DDF4FA] border-[1px] border-[#BDE7F2]"}>
+              <Text className={"text-[#0879B6] text-[14px] font-[900]"}>01</Text>
             </View>
-            <View style={styles.formularioTituloContenido}>
-              <Text style={styles.formularioTitulo}>Identificar medidor</Text>
-              <Text style={styles.formularioSubtitulo}>
+            <View className={"flex-1"}>
+              <Text className={"text-[#103E66] text-[17px] font-[800]"}>Identificar medidor</Text>
+              <Text className={"text-[#648196] text-[11px] mt-[4px]"}>
                 Ingresa el código del suministro.
               </Text>
             </View>
           </View>
 
-          <Text style={styles.label}>CÓDIGO DEL MEDIDOR</Text>
+          <Text className={"text-[10px] font-[500] leading-[20px] text-[#315B76] tracking-[0.8px] mb-[8px]"}>CÓDIGO DEL MEDIDOR</Text>
 
           <View
-            style={[
-              styles.campo,
-              errorCampo !== null && styles.campoError,
-            ]}
+            className={(errorCampo !== null ? "min-h-[57px] flex-row items-center gap-[8px] px-[12px] rounded-[18px] bg-[#FFF8F8] border-[1px] border-[#D94B61]" : "min-h-[57px] flex-row items-center gap-[8px] px-[12px] rounded-[18px] bg-[#F6FBFD] border-[1px] border-[#C7E2ED]")}
           >
-            <View style={styles.iconoCampo}>
-              <Text style={styles.iconoCampoTexto}>⌕</Text>
+            <View className={"w-[34px] h-[34px] rounded-[12px] items-center justify-center bg-[#DDF4FA]"}>
+              <Text className={"text-[#0879B6] text-[28px] leading-[31px]"}>⌕</Text>
             </View>
 
             <TextInput
@@ -187,7 +170,7 @@ export default function MedidorSearchScreen() {
               placeholder="MED-123456"
               placeholderTextColor="#7993A5"
               returnKeyType="search"
-              style={styles.input}
+              className={"flex-1 min-w-[0px] text-[#103E66] text-[16px] font-[700] py-[8px]"}
               value={codigo}
               editable={!consultando}
             />
@@ -198,24 +181,24 @@ export default function MedidorSearchScreen() {
                 accessibilityLabel="Borrar código"
                 disabled={consultando}
                 onPress={() => cambiarCodigo('')}
-                style={styles.borrarCodigo}
+                className={"w-[30px] h-[30px] rounded-[15px] items-center justify-center bg-[#E2EFF5]"}
               >
-                <Text style={styles.borrarCodigoTexto}>×</Text>
+                <Text className={"text-[#315B76] text-[22px]"}>×</Text>
               </Pressable>
             )}
           </View>
 
-          <View style={styles.ayudaFila}>
-            <Text style={styles.ayudaIcono}>i</Text>
-            <Text style={styles.ayudaTexto}>
+          <View className={"flex-row items-center gap-[8px] mt-[8px]"}>
+            <Text className={"w-[17px] h-[17px] rounded-[9px] overflow-hidden text-center text-[#0879B6] bg-[#DDF4FA] text-[12px] font-[800]"}>i</Text>
+            <Text className={"flex-1 text-[#648196] text-[11px] leading-[16px]"}>
               Formato esperado: MED- seguido de seis dígitos.
             </Text>
           </View>
 
           {errorCampo !== null && (
-            <View style={styles.mensajeError}>
-              <Text style={styles.mensajeErrorIcono}>!</Text>
-              <Text style={styles.mensajeErrorTexto}>{errorCampo}</Text>
+            <View className={"flex-row items-start gap-[8px] mt-[12px] p-[12px] rounded-[14px] bg-[#FFF0F2] border-[1px] border-[#F5CDD4]"}>
+              <Text className={"text-[#C7354F] text-[15px] font-[900]"}>!</Text>
+              <Text className={"flex-1 text-[#B52E47] text-[12px] leading-[18px]"}>{errorCampo}</Text>
             </View>
           )}
 
@@ -223,54 +206,50 @@ export default function MedidorSearchScreen() {
             accessibilityRole="button"
             disabled={consultando}
             onPress={() => void buscar()}
-            style={({ pressed }) => [
-              styles.botonBuscar,
-              pressed && styles.botonBuscarPresionado,
-              consultando && styles.botonDesactivado,
-            ]}
+            className={[(consultando ? "shadow-[0px_4px_10px_rgba(8,127,196,0.18)] min-h-[54px] flex-row items-center justify-center gap-[8px] mt-[16px] px-[12px] rounded-[17px] bg-[#087FC4] border-[1px] border-[#38B8DD] opacity-[0.65]" : "shadow-[0px_4px_10px_rgba(8,127,196,0.18)] min-h-[54px] flex-row items-center justify-center gap-[8px] mt-[16px] px-[12px] rounded-[17px] bg-[#087FC4] border-[1px] border-[#38B8DD]"), "active:bg-[#075D92]"].filter(Boolean).join(' ')}
           >
             {consultando ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <Text style={styles.botonBuscarIcono}>⌕</Text>
+              <Text className={"text-blanco text-[25px]"}>⌕</Text>
             )}
 
-            <Text style={styles.botonBuscarTexto}>
+            <Text className={"text-blanco text-[13px] font-[800]"}>
               {consultando ? 'Consultando medidor…' : 'Consultar medidor'}
             </Text>
 
             {!consultando && (
-              <Text style={styles.botonBuscarFlecha}>→</Text>
+              <Text className={"text-blanco text-[20px] ml-[NaNpx]"}>→</Text>
             )}
           </Pressable>
 
           {mensaje !== null && (
             <View
               accessibilityRole="alert"
-              style={styles.mensajeError}
+              className={"flex-row items-start gap-[8px] mt-[12px] p-[12px] rounded-[14px] bg-[#FFF0F2] border-[1px] border-[#F5CDD4]"}
             >
-              <Text style={styles.mensajeErrorIcono}>!</Text>
-              <Text style={styles.mensajeErrorTexto}>{mensaje}</Text>
+              <Text className={"text-[#C7354F] text-[15px] font-[900]"}>!</Text>
+              <Text className={"flex-1 text-[#B52E47] text-[12px] leading-[18px]"}>{mensaje}</Text>
             </View>
           )}
 
           {sinCacheOffline && (
-            <View style={styles.offlinePanel} accessibilityRole="summary">
-              <View style={styles.offlineCabecera}>
-                <View style={styles.offlineIcono}>
-                  <Text style={styles.offlineIconoTexto}>⌁</Text>
+            <View className={"mt-[16px] p-[12px] rounded-[20px] bg-[#FFF8E8] border-[1px] border-[#F2DDAA]"} accessibilityRole="summary">
+              <View className={"flex-row items-center gap-[8px]"}>
+                <View className={"w-[42px] h-[42px] rounded-[14px] bg-[#FFE8B5] items-center justify-center"}>
+                  <Text className={"text-[#A96500] text-[25px] font-[800]"}>⌁</Text>
                 </View>
-                <View style={styles.offlineTituloContenido}>
-                  <Text style={styles.offlineTitulo}>
+                <View className={"flex-1"}>
+                  <Text className={"text-[#80511A] text-[15px] font-[800]"}>
                     Sin datos disponibles
                   </Text>
-                  <Text style={styles.offlineEtiqueta}>
+                  <Text className={"text-[#A96500] text-[8px] tracking-[0.7px] font-[800] mt-[4px]"}>
                     CONSULTA LOCAL NO DISPONIBLE
                   </Text>
                 </View>
               </View>
 
-              <Text style={styles.offlineDescripcion}>
+              <Text className={"text-[#805E32] text-[12px] leading-[19px] mt-[12px]"}>
                 No hay conexión disponible ni información guardada para este
                 medidor. Puedes continuar indicando su estado, pero la lectura
                 quedará pendiente de verificación según el flujo de registro.
@@ -284,516 +263,33 @@ export default function MedidorSearchScreen() {
                     params: { codigo: codigo.trim().toUpperCase() },
                   })
                 }
-                style={({ pressed }) => [
-                  styles.botonContinuar,
-                  pressed && styles.presionado,
-                ]}
+                className={["min-h-[47px] mt-[12px] px-[12px] rounded-[14px] flex-row items-center justify-between gap-[8px] bg-[#A96500]", "active:opacity-[0.8]"].filter(Boolean).join(' ')}
               >
-                <Text style={styles.botonContinuarTexto}>
+                <Text className={"flex-1 text-blanco text-[11px] font-[800]"}>
                   Continuar sin datos de oficina
                 </Text>
-                <Text style={styles.botonContinuarFlecha}>→</Text>
+                <Text className={"text-blanco text-[19px]"}>→</Text>
               </Pressable>
             </View>
           )}
         </View>
 
         {/* Orientación para el técnico */}
-        <View style={styles.pistaPanel}>
-          <View style={styles.pistaIcono}>
-            <Text style={styles.pistaIconoTexto}>✓</Text>
+        <View className={"mx-[12px] mt-[16px] p-[12px] rounded-[20px] flex-row items-start gap-[12px] bg-[rgba(221,244,250,0.75)] border-[1px] border-blanco"}>
+          <View className={"w-[35px] h-[35px] rounded-[12px] bg-[#C9F2E3] items-center justify-center"}>
+            <Text className={"text-[#087F62] text-[17px] font-[900]"}>✓</Text>
           </View>
-          <View style={styles.pistaContenido}>
-            <Text style={styles.pistaTitulo}>Antes de continuar</Text>
-            <Text style={styles.pistaTexto}>
+          <View className={"flex-1"}>
+            <Text className={"text-[#16496D] text-[12px] font-[800]"}>Antes de continuar</Text>
+            <Text className={"text-[#5A788D] text-[11px] leading-[17px] mt-[4px]"}>
               Comprueba que el código corresponda al medidor que estás
               inspeccionando.
             </Text>
           </View>
         </View>
 
-        <Text style={styles.pie}>LECTURA ÁGIL · EPMAPS</Text>
+        <Text className={"text-[#7190A3] text-[9px] font-[700] tracking-[1.4px] text-center mt-[16px]"}>LECTURA ÁGIL · EPMAPS</Text>
       </ScrollView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  pantalla: {
-    flex: 1,
-    backgroundColor: '#EAF4F8',
-  },
-  contenido: {
-    paddingBottom: spacing.xl * 2,
-  },
-
-  // Encabezado azul con transparencias
-  encabezado: {
-    backgroundColor: '#062B52',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.xl * 1.5,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
-    overflow: 'hidden',
-  },
-  orbeUno: {
-    position: 'absolute',
-    top: -90,
-    right: -70,
-    width: 240,
-    height: 240,
-    borderRadius: 120,
-    backgroundColor: 'rgba(34,178,224,0.16)',
-    borderWidth: 1,
-    borderColor: 'rgba(179,239,255,0.2)',
-  },
-  orbeDos: {
-    position: 'absolute',
-    bottom: -100,
-    left: -70,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: 'rgba(0,207,190,0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(179,239,255,0.16)',
-  },
-  botonVolver: {
-    alignSelf: 'flex-start',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    marginBottom: spacing.lg,
-    borderRadius: 99,
-    backgroundColor: 'rgba(255,255,255,0.10)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
-  },
-  flechaVolver: {
-    color: '#FFFFFF',
-    fontSize: 20,
-  },
-  textoVolver: {
-    color: '#E0F6FF',
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  marcaFila: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.lg,
-  },
-  marcaIcono: {
-    width: 34,
-    height: 34,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.13)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.25)',
-  },
-  gotaMarca: {
-    color: '#8DEBFF',
-    fontSize: 24,
-    fontWeight: '700',
-  },
-  marcaTexto: {
-    ...typography.label,
-    color: '#BDEBFA',
-    fontSize: 10,
-    letterSpacing: 1,
-  },
-  tituloFila: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  tituloContenido: {
-    flex: 1,
-  },
-  kicker: {
-    color: '#7EE6E8',
-    fontSize: 9,
-    fontWeight: '800',
-    letterSpacing: 1.4,
-    marginBottom: spacing.sm,
-  },
-  titulo: {
-    ...typography.title,
-    color: '#FFFFFF',
-    fontSize: 29,
-    lineHeight: 35,
-  },
-  tituloAcento: {
-    color: '#65DCE5',
-    fontSize: 30,
-    lineHeight: 36,
-    fontWeight: '800',
-  },
-  iconoAgua: {
-    width: 72,
-    height: 82,
-    borderRadius: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.10)',
-    borderWidth: 1,
-    borderColor: 'rgba(180,240,255,0.35)',
-  },
-  iconoAguaTexto: {
-    color: '#9BEFFF',
-    fontSize: 55,
-    fontWeight: '300',
-  },
-  subtitulo: {
-    ...typography.body,
-    color: '#D5EAF7',
-    fontSize: 12,
-    lineHeight: 20,
-    marginTop: spacing.md,
-  },
-  estadoConexion: {
-    alignSelf: 'flex-start',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginTop: spacing.lg,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: 99,
-    backgroundColor: 'rgba(255,255,255,0.09)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.17)',
-  },
-  puntoConexion: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  puntoDisponible: {
-    backgroundColor: '#51E1AF',
-  },
-  puntoDesconectado: {
-    backgroundColor: '#FFC45C',
-  },
-  estadoConexionTexto: {
-    color: '#E0F6FF',
-    fontSize: 11,
-    fontWeight: '600',
-  },
-
-  // Formulario principal
-  formulario: {
-    marginHorizontal: spacing.md,
-    marginTop: -spacing.md,
-    padding: spacing.lg,
-    borderRadius: 26,
-    backgroundColor: 'rgba(255,255,255,0.84)',
-    borderWidth: 1,
-    borderColor: '#FFFFFF',
-    shadowColor: '#0A456A',
-    shadowOpacity: 0.12,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 4,
-  },
-  formularioEncabezado: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginBottom: spacing.xl,
-  },
-  numeroPaso: {
-    width: 43,
-    height: 43,
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#DDF4FA',
-    borderWidth: 1,
-    borderColor: '#BDE7F2',
-  },
-  numeroPasoTexto: {
-    color: '#0879B6',
-    fontSize: 14,
-    fontWeight: '900',
-  },
-  formularioTituloContenido: {
-    flex: 1,
-  },
-  formularioTitulo: {
-    color: '#103E66',
-    fontSize: 17,
-    fontWeight: '800',
-  },
-  formularioSubtitulo: {
-    color: '#648196',
-    fontSize: 11,
-    marginTop: 4,
-  },
-  label: {
-    ...typography.label,
-    color: '#315B76',
-    fontSize: 10,
-    letterSpacing: 0.8,
-    marginBottom: spacing.sm,
-  },
-  campo: {
-    minHeight: 57,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: 18,
-    backgroundColor: '#F6FBFD',
-    borderWidth: 1,
-    borderColor: '#C7E2ED',
-  },
-  campoError: {
-    borderColor: '#D94B61',
-    backgroundColor: '#FFF8F8',
-  },
-  iconoCampo: {
-    width: 34,
-    height: 34,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#DDF4FA',
-  },
-  iconoCampoTexto: {
-    color: '#0879B6',
-    fontSize: 28,
-    lineHeight: 31,
-  },
-  input: {
-    flex: 1,
-    minWidth: 0,
-    color: '#103E66',
-    fontSize: 16,
-    fontWeight: '700',
-    paddingVertical: spacing.sm,
-  },
-  borrarCodigo: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#E2EFF5',
-  },
-  borrarCodigoTexto: {
-    color: '#315B76',
-    fontSize: 22,
-  },
-  ayudaFila: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginTop: spacing.sm,
-  },
-  ayudaIcono: {
-    width: 17,
-    height: 17,
-    borderRadius: 9,
-    overflow: 'hidden',
-    textAlign: 'center',
-    color: '#0879B6',
-    backgroundColor: '#DDF4FA',
-    fontSize: 12,
-    fontWeight: '800',
-  },
-  ayudaTexto: {
-    flex: 1,
-    color: '#648196',
-    fontSize: 11,
-    lineHeight: 16,
-  },
-  mensajeError: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-    marginTop: spacing.md,
-    padding: spacing.md,
-    borderRadius: 14,
-    backgroundColor: '#FFF0F2',
-    borderWidth: 1,
-    borderColor: '#F5CDD4',
-  },
-  mensajeErrorIcono: {
-    color: '#C7354F',
-    fontSize: 15,
-    fontWeight: '900',
-  },
-  mensajeErrorTexto: {
-    flex: 1,
-    color: '#B52E47',
-    fontSize: 12,
-    lineHeight: 18,
-  },
-  botonBuscar: {
-    minHeight: 54,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    marginTop: spacing.lg,
-    paddingHorizontal: spacing.md,
-    borderRadius: 17,
-    backgroundColor: '#087FC4',
-    borderWidth: 1,
-    borderColor: '#38B8DD',
-    shadowColor: '#087FC4',
-    shadowOpacity: 0.18,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
-  },
-  botonBuscarPresionado: {
-    backgroundColor: '#075D92',
-  },
-  botonDesactivado: {
-    opacity: 0.65,
-  },
-  botonBuscarIcono: {
-    color: '#FFFFFF',
-    fontSize: 25,
-  },
-  botonBuscarTexto: {
-    color: '#FFFFFF',
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  botonBuscarFlecha: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    marginLeft: 'auto',
-  },
-
-  // Continuar sin conexión
-  offlinePanel: {
-    marginTop: spacing.lg,
-    padding: spacing.md,
-    borderRadius: 20,
-    backgroundColor: '#FFF8E8',
-    borderWidth: 1,
-    borderColor: '#F2DDAA',
-  },
-  offlineCabecera: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  offlineIcono: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    backgroundColor: '#FFE8B5',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  offlineIconoTexto: {
-    color: '#A96500',
-    fontSize: 25,
-    fontWeight: '800',
-  },
-  offlineTituloContenido: {
-    flex: 1,
-  },
-  offlineTitulo: {
-    color: '#80511A',
-    fontSize: 15,
-    fontWeight: '800',
-  },
-  offlineEtiqueta: {
-    color: '#A96500',
-    fontSize: 8,
-    letterSpacing: 0.7,
-    fontWeight: '800',
-    marginTop: 4,
-  },
-  offlineDescripcion: {
-    color: '#805E32',
-    fontSize: 12,
-    lineHeight: 19,
-    marginTop: spacing.md,
-  },
-  botonContinuar: {
-    minHeight: 47,
-    marginTop: spacing.md,
-    paddingHorizontal: spacing.md,
-    borderRadius: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-    backgroundColor: '#A96500',
-  },
-  presionado: {
-    opacity: 0.8,
-  },
-  botonContinuarTexto: {
-    flex: 1,
-    color: '#FFFFFF',
-    fontSize: 11,
-    fontWeight: '800',
-  },
-  botonContinuarFlecha: {
-    color: '#FFFFFF',
-    fontSize: 19,
-  },
-
-  // Ayuda contextual
-  pistaPanel: {
-    marginHorizontal: spacing.md,
-    marginTop: spacing.lg,
-    padding: spacing.md,
-    borderRadius: 20,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.md,
-    backgroundColor: 'rgba(221,244,250,0.75)',
-    borderWidth: 1,
-    borderColor: '#FFFFFF',
-  },
-  pistaIcono: {
-    width: 35,
-    height: 35,
-    borderRadius: 12,
-    backgroundColor: '#C9F2E3',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pistaIconoTexto: {
-    color: '#087F62',
-    fontSize: 17,
-    fontWeight: '900',
-  },
-  pistaContenido: {
-    flex: 1,
-  },
-  pistaTitulo: {
-    color: '#16496D',
-    fontSize: 12,
-    fontWeight: '800',
-  },
-  pistaTexto: {
-    color: '#5A788D',
-    fontSize: 11,
-    lineHeight: 17,
-    marginTop: 4,
-  },
-  pie: {
-    color: '#7190A3',
-    fontSize: 9,
-    fontWeight: '700',
-    letterSpacing: 1.4,
-    textAlign: 'center',
-    marginTop: spacing.lg,
-  },
-});
